@@ -196,25 +196,68 @@ let selectedCategory = "Todos";
 
 const categoriesElement = document.getElementById("categories");
 const productsGrid = document.getElementById("productsGrid");
+
+const DEFAULT_IMAGE = "images/default-product.svg";
+
 function normalizeProductImage(value) {
-  const cleaned = String(value || "").trim();
+  if (!value || typeof value !== "string") {
+    return DEFAULT_IMAGE;
+  }
+
+  let cleaned = value.trim();
 
   if (!cleaned) {
-    return "images/default-product.svg";
+    return DEFAULT_IMAGE;
+  }
+
+  if (/^[A-Za-z]:\\/.test(cleaned) || /^[A-Za-z]:\//.test(cleaned)) {
+    console.warn("Caminho local de computador ignorado:", cleaned);
+    return DEFAULT_IMAGE;
   }
 
   if (/^(https?:)?\/\//i.test(cleaned) || cleaned.startsWith("data:")) {
     return cleaned;
   }
 
-  const normalized = cleaned.replace(/\\/g, "/").replace(/^\/+/, "").replace(/^\.\//, "");
+  cleaned = cleaned.replace(/\\/g, "/");
+  cleaned = cleaned.replace(/^\/+/, "");
+  cleaned = cleaned.replace(/^\.\//, "");
+  cleaned = cleaned.replace(/^imagens\//i, "images/");
 
-  if (!normalized) {
-    return "images/default-product.svg";
+  if (!cleaned) {
+    return DEFAULT_IMAGE;
   }
 
-  return normalized.startsWith("images/") ? normalized : `images/${normalized}`;
+  if (cleaned.startsWith("images/images/")) {
+    cleaned = cleaned.replace(/^images\/images\//i, "images/");
+  }
+
+  if (!cleaned.startsWith("images/")) {
+    cleaned = `images/${cleaned}`;
+  }
+
+  return cleaned;
 }
+
+function getProductImagePath(product) {
+  const candidates = [
+    product?.image,
+    product?.imagem,
+    product?.imageUrl,
+    product?.imagePath
+  ];
+
+  for (const candidate of candidates) {
+    const normalized = normalizeProductImage(candidate);
+
+    if (normalized && normalized !== DEFAULT_IMAGE) {
+      return normalized;
+    }
+  }
+
+  return DEFAULT_IMAGE;
+}
+
 function escapeHTML(value) {
   return String(value || "").replace(/[&<>"']/g, char => ({
     "&": "&amp;",
@@ -263,48 +306,50 @@ function renderProducts() {
     return;
   }
 
-  productsGrid.innerHTML = filteredProducts.map(product => `
-    <article class="product-card">
+  productsGrid.innerHTML = filteredProducts.map(product => {
+    const productImagePath = getProductImagePath(product);
+    console.log("caminho final utilizado:", productImagePath);
 
-      <div class="product-image">
-        <img
-          src="${escapeHTML(normalizeProductImage(product.image))}"
-          alt="${escapeHTML(product.name)}"
-          onerror="this.onerror=null;this.src='images/default-product.svg';"
-        >
-      </div>
-
-      <div class="product-content">
-
-        <div class="product-category">
-          ${escapeHTML(product.category)}
+    return `
+      <article class="product-card">
+        <div class="product-image">
+          <img
+            src="${escapeHTML(productImagePath)}"
+            alt="${escapeHTML(product.name)}"
+            onerror="console.error('Erro ao carregar imagem:', this.src); this.src='images/default-product.svg';"
+          >
         </div>
 
-        <div class="product-name">
-          ${escapeHTML(product.name)}
+        <div class="product-content">
+          <div class="product-category">
+            ${escapeHTML(product.category)}
+          </div>
+
+          <div class="product-name">
+            ${escapeHTML(product.name)}
+          </div>
+
+          <div class="product-description">
+            ${escapeHTML(product.description || "Descrição do produto")}
+          </div>
+
+          <div class="product-price">
+            ${escapeHTML(product.price || "Preço sob consulta")}
+          </div>
+
+          <a
+            class="whatsapp-button"
+            href="https://wa.me/558581942691?text=${encodeURIComponent(
+              "Olá! Tenho interesse no produto: " + product.name
+            )}"
+            target="_blank"
+          >
+            Pedir pelo WhatsApp
+          </a>
         </div>
-
-        <div class="product-description">
-          ${escapeHTML(product.description || "Descrição do produto")}
-        </div>
-
-        <div class="product-price">
-          ${escapeHTML(product.price || "Preço sob consulta")}
-        </div>
-
-        <a
-          class="whatsapp-button"
-          href="https://wa.me/558581942691?text=${encodeURIComponent(
-            "Olá! Tenho interesse no produto: " + product.name
-          )}"
-          target="_blank"
-        >
-          Pedir pelo WhatsApp
-        </a>
-
-      </div>
-    </article>
-  `).join("");
+      </article>
+    `;
+  }).join("");
 }
 
 function render() {

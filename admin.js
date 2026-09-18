@@ -2,6 +2,9 @@ let products = JSON.parse(localStorage.getItem("imperialProducts")) || [];
 
 let editingId = null;
 
+const STORAGE_KEY = "imperialProducts";
+const DEFAULT_IMAGE = "images/default-product.svg";
+
 const form = document.getElementById("productForm");
 const productCount = document.getElementById("productCount");
 const adminProductsList = document.getElementById("adminProductsList");
@@ -18,9 +21,18 @@ const imageHelp = document.getElementById("imageHelp");
 const formTitle = document.getElementById("formTitle");
 
 function normalizeImagePath(value) {
-  const cleaned = String(value || "").trim();
+  if (!value || typeof value !== "string") {
+    return "";
+  }
+
+  let cleaned = value.trim();
 
   if (!cleaned) {
+    return "";
+  }
+
+  if (/^[A-Za-z]:\\/.test(cleaned) || /^[A-Za-z]:\//.test(cleaned)) {
+    console.warn("Caminho local de computador ignorado:", cleaned);
     return "";
   }
 
@@ -28,30 +40,63 @@ function normalizeImagePath(value) {
     return cleaned;
   }
 
-  const normalized = cleaned.replace(/\\/g, "/").replace(/^\.\//, "").replace(/^\/+/, "");
+  cleaned = cleaned.replace(/\\/g, "/");
+  cleaned = cleaned.replace(/^\.\//, "");
+  cleaned = cleaned.replace(/^\/+/, "");
+  cleaned = cleaned.replace(/^imagens\//i, "images/");
 
-  if (!normalized) {
+  if (!cleaned) {
     return "";
   }
 
-  return normalized.startsWith("images/") ? normalized : `images/${normalized}`;
+  if (cleaned.startsWith("images/images/")) {
+    cleaned = cleaned.replace(/^images\/images\//i, "images/");
+  }
+
+  if (!cleaned.startsWith("images/")) {
+    cleaned = `images/${cleaned}`;
+  }
+
+  return cleaned;
+}
+
+function getProductImagePath(product) {
+  const candidates = [
+    product?.image,
+    product?.imagem,
+    product?.imageUrl,
+    product?.imagePath
+  ];
+
+  for (const candidate of candidates) {
+    const normalized = normalizeImagePath(candidate);
+    if (normalized) {
+      return normalized;
+    }
+  }
+
+  return "";
 }
 
 function updateImagePreview(value) {
   const normalized = normalizeImagePath(value);
 
   if (!normalized) {
-    imagePreview.src = "";
-    imagePreview.hidden = true;
+    imagePreview.src = DEFAULT_IMAGE;
+    imagePreview.hidden = false;
     return;
   }
 
   imagePreview.src = normalized;
   imagePreview.hidden = false;
+  imagePreview.onerror = () => {
+    console.error("Erro ao carregar imagem de prévia:", normalized);
+    imagePreview.src = DEFAULT_IMAGE;
+  };
 }
 
 function saveToStorage() {
-  localStorage.setItem("imperialProducts", JSON.stringify(products));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
 }
 
 function escapeHTML(value) {
@@ -85,14 +130,22 @@ productImageFile.addEventListener("change", event => {
 form.addEventListener("submit", event => {
   event.preventDefault();
 
+  const normalizedImage = normalizeImagePath(productImage.value);
+
   const product = {
     id: editingId || crypto.randomUUID(),
     name: productName.value.trim(),
     category: productCategory.value,
     price: productPrice.value.trim(),
-    image: normalizeImagePath(productImage.value),
+    image: normalizedImage,
+    imagem: normalizedImage,
+    imageUrl: normalizedImage,
+    imagePath: normalizedImage,
     description: productDescription.value.trim()
   };
+
+  console.log("imagem salva no produto:", product);
+  console.log("caminho final utilizado:", normalizedImage);
 
   if (!product.name) {
     alert("Digite o nome do produto.");
@@ -123,8 +176,8 @@ function clearForm() {
   productImage.value = "";
   productImageFile.value = "";
   productDescription.value = "";
-  imagePreview.src = "";
-  imagePreview.hidden = true;
+  imagePreview.src = DEFAULT_IMAGE;
+  imagePreview.hidden = false;
   imageHelp.textContent = "Selecione uma imagem no seu computador, copie para a pasta images/ e insira o caminho relativo do arquivo, por exemplo: images/marmita-750.jpg";
   formTitle.textContent = "Adicionar produto";
 }
@@ -139,10 +192,10 @@ function editProduct(id) {
   productName.value = product.name;
   productCategory.value = product.category;
   productPrice.value = product.price;
-  productImage.value = normalizeImagePath(product.image || "");
+  productImage.value = getProductImagePath(product);
   productDescription.value = product.description;
   productImageFile.value = "";
-  updateImagePreview(product.image || "");
+  updateImagePreview(getProductImagePath(product));
   imageHelp.textContent = "Selecione uma imagem no seu computador, copie para a pasta images/ e insira o caminho relativo do arquivo, por exemplo: images/marmita-750.jpg";
 
   formTitle.textContent = "Editar produto";
@@ -182,47 +235,45 @@ function renderAdminProducts() {
     return;
   }
 
-  adminProductsList.innerHTML = products.map(product => `
-    <div class="admin-product">
+  adminProductsList.innerHTML = products.map(product => {
+    const productImagePath = getProductImagePath(product) || DEFAULT_IMAGE;
 
-      ${
-        product.image
-          ? `<img
-              class="admin-product-image"
-              src="${escapeHTML(normalizeImagePath(product.image))}"
-              alt=""
-              onerror="this.onerror=null;this.src='images/default-product.svg';"
-            >`
-          : `<div class="admin-product-image"></div>`
-      }
-
-      <div class="admin-product-info">
-        <strong>${escapeHTML(product.name)}</strong>
-        <small>
-          ${escapeHTML(product.category)}
-          •
-          ${escapeHTML(product.price || "Preço não definido")}
-        </small>
-      </div>
-
-      <div class="admin-actions">
-        <button
-          class="edit-button"
-          onclick="editProduct('${product.id}')"
+    return `
+      <div class="admin-product">
+        <img
+          class="admin-product-image"
+          src="${escapeHTML(productImagePath)}"
+          alt=""
+          onerror="console.error('Erro ao carregar imagem:', this.src); this.src='images/default-product.svg';"
         >
-          Editar
-        </button>
 
-        <button
-          class="delete-button"
-          onclick="deleteProduct('${product.id}')"
-        >
-          Excluir
-        </button>
+        <div class="admin-product-info">
+          <strong>${escapeHTML(product.name)}</strong>
+          <small>
+            ${escapeHTML(product.category)}
+            •
+            ${escapeHTML(product.price || "Preço não definido")}
+          </small>
+        </div>
+
+        <div class="admin-actions">
+          <button
+            class="edit-button"
+            onclick="editProduct('${product.id}')"
+          >
+            Editar
+          </button>
+
+          <button
+            class="delete-button"
+            onclick="deleteProduct('${product.id}')"
+          >
+            Excluir
+          </button>
+        </div>
       </div>
-
-    </div>
-  `).join("");
+    `;
+  }).join("");
 }
 
 clearForm();
