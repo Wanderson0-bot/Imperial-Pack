@@ -98,7 +98,7 @@ const defaultProducts = [
   {
     id: crypto.randomUUID(),
     name: "Lacre de Segurança para Delivery Açaí",
-    category: "Delivery",
+    category: "Acessórios",
     price: "",
     image: "",
     description: ""
@@ -106,7 +106,7 @@ const defaultProducts = [
   {
     id: crypto.randomUUID(),
     name: "Lacre de Segurança para Delivery Hambúrguer",
-    category: "Delivery",
+    category: "Acessórios",
     price: "",
     image: "",
     description: ""
@@ -114,7 +114,7 @@ const defaultProducts = [
   {
     id: crypto.randomUUID(),
     name: "Lacre de Segurança para Delivery Simples",
-    category: "Delivery",
+    category: "Acessórios",
     price: "",
     image: "",
     description: ""
