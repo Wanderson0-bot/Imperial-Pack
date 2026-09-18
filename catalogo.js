@@ -4,7 +4,7 @@ const defaultProducts = [
     name: "Marmitex de Isopor TM 102 750ml Totalplast",
     category: "Descartáveis",
     price: "",
-    image: "",
+    image: "images/produto-exemplo.jpg",
     description: ""
   },
   {
@@ -100,7 +100,7 @@ const defaultProducts = [
     name: "Lacre de Segurança para Delivery Açaí",
     category: "Acessórios",
     price: "",
-    image: "",
+    image: "images/lacre-acai.jpg",
     description: ""
   },
   {
@@ -108,7 +108,7 @@ const defaultProducts = [
     name: "Lacre de Segurança para Delivery Hambúrguer",
     category: "Acessórios",
     price: "",
-    image: "",
+    image: "images/saco-hamburguer.jpg",
     description: ""
   },
   {
@@ -116,7 +116,7 @@ const defaultProducts = [
     name: "Lacre de Segurança para Delivery Simples",
     category: "Acessórios",
     price: "",
-    image: "",
+    image: "images/produto-exemplo.jpg",
     description: ""
   },
   {
@@ -196,7 +196,25 @@ let selectedCategory = "Todos";
 
 const categoriesElement = document.getElementById("categories");
 const productsGrid = document.getElementById("productsGrid");
+function normalizeProductImage(value) {
+  const cleaned = String(value || "").trim();
 
+  if (!cleaned) {
+    return "images/default-product.svg";
+  }
+
+  if (/^(https?:)?\/\//i.test(cleaned) || cleaned.startsWith("data:")) {
+    return cleaned;
+  }
+
+  const normalized = cleaned.replace(/\\/g, "/").replace(/^\/+/, "").replace(/^\.\//, "");
+
+  if (!normalized) {
+    return "images/default-product.svg";
+  }
+
+  return normalized.startsWith("images/") ? normalized : `images/${normalized}`;
+}
 function escapeHTML(value) {
   return String(value || "").replace(/[&<>"']/g, char => ({
     "&": "&amp;",
@@ -249,11 +267,11 @@ function renderProducts() {
     <article class="product-card">
 
       <div class="product-image">
-        ${
-          product.image
-            ? `<img src="${escapeHTML(product.image)}" alt="${escapeHTML(product.name)}">`
-            : `📷<br>Imagem do produto`
-        }
+        <img
+          src="${escapeHTML(normalizeProductImage(product.image))}"
+          alt="${escapeHTML(product.name)}"
+          onerror="this.onerror=null;this.src='images/default-product.svg';"
+        >
       </div>
 
       <div class="product-content">

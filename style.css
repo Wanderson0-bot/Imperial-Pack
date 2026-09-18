@@ -306,6 +306,26 @@ textarea:focus {
   border-color: var(--green);
 }
 
+.image-preview-wrap {
+  margin-top: 8px;
+}
+
+.image-preview {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #edf1f4;
+}
+
+.image-help {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 textarea {
   min-height: 85px;
   resize: vertical;

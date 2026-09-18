@@ -59,12 +59,27 @@
           placeholder="Ex.: R$ 45,00"
         />
 
-        <label>URL da imagem</label>
+        <label>Caminho da imagem local</label>
         <input
-          type="url"
+          type="text"
           id="productImage"
-          placeholder="https://..."
+          placeholder="images/marmita-750.jpg"
         />
+
+        <label>Selecionar imagem do computador</label>
+        <input
+          type="file"
+          id="productImageFile"
+          accept="image/*"
+        />
+
+        <div class="image-preview-wrap">
+          <img id="imagePreview" class="image-preview" hidden alt="Prévia da imagem" />
+        </div>
+
+        <p class="image-help" id="imageHelp">
+          Selecione uma imagem no seu computador, copie para a pasta images/ do projeto e informe o caminho relativo, por exemplo: images/marmita-750.jpg
+        </p>
 
         <label>Descrição</label>
         <textarea
