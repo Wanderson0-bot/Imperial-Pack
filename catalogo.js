@@ -276,7 +276,7 @@ function renderProducts() {
 
         <a
           class="whatsapp-button"
-          href="https://wa.me/?text=${encodeURIComponent(
+          href="https://wa.me/558581942691?text=${encodeURIComponent(
             "Olá! Tenho interesse no produto: " + product.name
           )}"
           target="_blank"
