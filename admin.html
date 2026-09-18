@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Imperial Pack | Administração</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-content">
+      <div class="brand">
+        <strong>IMPERIAL <span>PACK</span></strong>
+        <small>Painel administrativo</small>
+      </div>
+      <a href="index.html" class="back-link">Ver catálogo</a>
+    </div>
+  </header>
+
+  <main class="admin-container">
+
+    <section class="admin-heading">
+      <span class="eyebrow">ADMINISTRAÇÃO</span>
+      <h1>Gerenciar produtos</h1>
+      <p>Adicione, edite ou remova produtos do catálogo.</p>
+    </section>
+
+    <section class="admin-card">
+      <div class="card-title">
+        <h2 id="formTitle">Adicionar produto</h2>
+        <button class="clear-button" onclick="clearForm()">Limpar</button>
+      </div>
+
+      <form id="productForm">
+
+        <input type="hidden" id="productId" />
+
+        <label>Nome do produto</label>
+        <input
+          type="text"
+          id="productName"
+          placeholder="Ex.: Marmitex de Isopor 750ml"
+          required
+        />
+
+        <label>Categoria</label>
+        <select id="productCategory" required>
+          <option value="Delivery">Delivery</option>
+          <option value="Descartáveis">Descartáveis</option>
+          <option value="Ecológicos">Ecológicos</option>
+          <option value="Acessórios">Acessórios</option>
+        </select>
+
+        <label>Preço</label>
+        <input
+          type="text"
+          id="productPrice"
+          placeholder="Ex.: R$ 45,00"
+        />
+
+        <label>URL da imagem</label>
+        <input
+          type="url"
+          id="productImage"
+          placeholder="https://..."
+        />
+
+        <label>Descrição</label>
+        <textarea
+          id="productDescription"
+          placeholder="Descrição breve do produto"
+        ></textarea>
+
+        <button type="submit" class="primary-button">
+          Salvar produto
+        </button>
+
+      </form>
+    </section>
+
+    <section class="admin-card">
+      <div class="card-title">
+        <h2>Produtos cadastrados</h2>
+        <span class="product-count" id="productCount"></span>
+      </div>
+
+      <div id="adminProductsList"></div>
+    </section>
+
+  </main>
+
+  <script src="admin.js"></script>
+</body>
+</html>
