@@ -3,8 +3,6 @@ let products = JSON.parse(localStorage.getItem("imperialProducts")) || [];
 let editingId = null;
 
 const STORAGE_KEY = "imperialProducts";
-const DEFAULT_IMAGE = "images/default-product.svg";
-
 const form = document.getElementById("productForm");
 const productCount = document.getElementById("productCount");
 const adminProductsList = document.getElementById("adminProductsList");
@@ -20,79 +18,54 @@ const imagePreview = document.getElementById("imagePreview");
 const imageHelp = document.getElementById("imageHelp");
 const formTitle = document.getElementById("formTitle");
 
-function normalizeImagePath(value) {
-  if (!value || typeof value !== "string") {
-    return "";
-  }
-
-  let cleaned = value.trim();
-
-  if (!cleaned) {
-    return "";
-  }
-
-  if (/^[A-Za-z]:\\/.test(cleaned) || /^[A-Za-z]:\//.test(cleaned)) {
-    console.warn("Caminho local de computador ignorado:", cleaned);
-    return "";
-  }
-
-  if (/^(https?:)?\/\//i.test(cleaned) || cleaned.startsWith("data:")) {
-    return cleaned;
-  }
-
-  cleaned = cleaned.replace(/\\/g, "/");
-  cleaned = cleaned.replace(/^\.\//, "");
-  cleaned = cleaned.replace(/^\/+/, "");
-  cleaned = cleaned.replace(/^imagens\//i, "images/");
-
-  if (!cleaned) {
-    return "";
-  }
-
-  if (cleaned.startsWith("images/images/")) {
-    cleaned = cleaned.replace(/^images\/images\//i, "images/");
-  }
-
-  if (!cleaned.startsWith("images/")) {
-    cleaned = `images/${cleaned}`;
-  }
-
-  return cleaned;
+function getImagePath(value) {
+  return typeof value === "string" ? value.trim() : "";
 }
 
-function getProductImagePath(product) {
-  const candidates = [
-    product?.image,
-    product?.imagem,
-    product?.imageUrl,
-    product?.imagePath
-  ];
-
-  for (const candidate of candidates) {
-    const normalized = normalizeImagePath(candidate);
-    if (normalized) {
-      return normalized;
-    }
-  }
-
-  return "";
+function setImageMessage(message, isError = false) {
+  imageHelp.textContent = message;
+  imageHelp.classList.toggle("image-error", isError);
 }
 
 function updateImagePreview(value) {
-  const normalized = normalizeImagePath(value);
+  const imagePath = getImagePath(value);
 
-  if (!normalized) {
-    imagePreview.src = DEFAULT_IMAGE;
+  imagePreview.onerror = () => {
+    imagePreview.hidden = true;
+    setImageMessage(`Imagem não encontrada: ${imagePath}. Verifique se o arquivo existe exatamente nesse caminho dentro do projeto.`, true);
+  };
+
+  imagePreview.onload = () => {
     imagePreview.hidden = false;
+    setImageMessage(`Imagem carregada: ${imagePath}`);
+  };
+
+  if (!imagePath) {
+    imagePreview.removeAttribute("src");
+    imagePreview.hidden = true;
+    setImageMessage("Informe o caminho relativo, por exemplo: images/marmita-750.png");
     return;
   }
 
-  imagePreview.src = normalized;
+  if (/^[A-Za-z]:[\\/]/.test(imagePath) || imagePath.startsWith("/") || /^(https?:)?\/\//i.test(imagePath) || imagePath.startsWith("data:")) {
+    imagePreview.removeAttribute("src");
+    imagePreview.hidden = true;
+    setImageMessage("Use somente um caminho relativo do projeto, como images/marmita-750.png. Caminhos do Windows, Base64 e URLs externas não são aceitos.", true);
+    return;
+  }
+
+  try {
+    const imageUrl = new URL(imagePath, document.baseURI);
+    imagePreview.src = imageUrl.href;
+  } catch (error) {
+    imagePreview.removeAttribute("src");
+    imagePreview.hidden = true;
+    setImageMessage(`Caminho de imagem inválido: ${imagePath}`, true);
+    return;
+  }
+
   imagePreview.hidden = false;
-  imagePreview.onerror = () => {
-    console.error("Erro ao carregar imagem de prévia:", normalized);
-    imagePreview.src = DEFAULT_IMAGE;
-  };
+  setImageMessage(`Procurando imagem: ${imagePath}`);
 }
 
 function saveToStorage() {
@@ -120,32 +93,29 @@ productImageFile.addEventListener("change", event => {
     return;
   }
 
-  const suggestedPath = normalizeImagePath(`images/${file.name}`);
+  const suggestedPath = `images/${file.name}`;
   productImage.value = suggestedPath;
   updateImagePreview(suggestedPath);
 
-  imageHelp.textContent = "Arquivo selecionado localmente. Copie este arquivo para a pasta images/ do projeto e confirme o caminho antes de salvar.";
+  setImageMessage("Arquivo selecionado. Confirme que ele está na pasta images/ do projeto e que o caminho relativo está correto.");
 });
 
 form.addEventListener("submit", event => {
   event.preventDefault();
 
-  const normalizedImage = normalizeImagePath(productImage.value);
+  const imagePath = productImage.value;
 
   const product = {
     id: editingId || crypto.randomUUID(),
     name: productName.value.trim(),
     category: productCategory.value,
     price: productPrice.value.trim(),
-    image: normalizedImage,
-    imagem: normalizedImage,
-    imageUrl: normalizedImage,
-    imagePath: normalizedImage,
+    image: imagePath,
     description: productDescription.value.trim()
   };
 
   console.log("imagem salva no produto:", product);
-  console.log("caminho final utilizado:", normalizedImage);
+  console.log("caminho final utilizado:", imagePath);
 
   if (!product.name) {
     alert("Digite o nome do produto.");
@@ -176,9 +146,9 @@ function clearForm() {
   productImage.value = "";
   productImageFile.value = "";
   productDescription.value = "";
-  imagePreview.src = DEFAULT_IMAGE;
-  imagePreview.hidden = false;
-  imageHelp.textContent = "Selecione uma imagem no seu computador, copie para a pasta images/ e insira o caminho relativo do arquivo, por exemplo: images/marmita-750.jpg";
+  imagePreview.removeAttribute("src");
+  imagePreview.hidden = true;
+  setImageMessage("Informe o caminho relativo, por exemplo: images/marmita-750.png");
   formTitle.textContent = "Adicionar produto";
 }
 
@@ -192,11 +162,10 @@ function editProduct(id) {
   productName.value = product.name;
   productCategory.value = product.category;
   productPrice.value = product.price;
-  productImage.value = getProductImagePath(product);
+  productImage.value = getImagePath(product.image);
   productDescription.value = product.description;
   productImageFile.value = "";
-  updateImagePreview(getProductImagePath(product));
-  imageHelp.textContent = "Selecione uma imagem no seu computador, copie para a pasta images/ e insira o caminho relativo do arquivo, por exemplo: images/marmita-750.jpg";
+  updateImagePreview(product.image);
 
   formTitle.textContent = "Editar produto";
 
@@ -235,16 +204,13 @@ function renderAdminProducts() {
     return;
   }
 
-  adminProductsList.innerHTML = products.map(product => {
-    const productImagePath = getProductImagePath(product) || DEFAULT_IMAGE;
-
-    return `
+  adminProductsList.innerHTML = products.map(product => `
       <div class="admin-product">
         <img
           class="admin-product-image"
-          src="${escapeHTML(productImagePath)}"
+          src="${escapeHTML(product.image || "")}"
+          data-image-path="${escapeHTML(product.image || "")}"
           alt=""
-          onerror="console.error('Erro ao carregar imagem:', this.src); this.src='images/default-product.svg';"
         >
 
         <div class="admin-product-info">
@@ -272,8 +238,15 @@ function renderAdminProducts() {
           </button>
         </div>
       </div>
-    `;
-  }).join("");
+    `).join("");
+
+  adminProductsList.querySelectorAll("img[data-image-path]").forEach(image => {
+    const imagePath = image.dataset.imagePath;
+    image.onerror = () => {
+      image.alt = `Imagem não encontrada: ${imagePath}`;
+      image.removeAttribute("src");
+    };
+  });
 }
 
 clearForm();

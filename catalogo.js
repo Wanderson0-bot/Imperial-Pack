@@ -4,7 +4,7 @@ const defaultProducts = [
     name: "Marmitex de Isopor TM 102 750ml Totalplast",
     category: "Descartáveis",
     price: "",
-    image: "images/produto-exemplo.jpg",
+    image: "images/Marmitex de Isopor TM 102 750ml Totalplast.png",
     description: ""
   },
   {
@@ -100,7 +100,7 @@ const defaultProducts = [
     name: "Lacre de Segurança para Delivery Açaí",
     category: "Acessórios",
     price: "",
-    image: "images/lacre-acai.jpg",
+    image: "images/Lacre de Segurança para Delivery Açaí.png",
     description: ""
   },
   {
@@ -108,7 +108,7 @@ const defaultProducts = [
     name: "Lacre de Segurança para Delivery Hambúrguer",
     category: "Acessórios",
     price: "",
-    image: "images/saco-hamburguer.jpg",
+    image: "images/Lacre de Segurança para Delivery Hambúrguer.png",
     description: ""
   },
   {
@@ -116,7 +116,7 @@ const defaultProducts = [
     name: "Lacre de Segurança para Delivery Simples",
     category: "Acessórios",
     price: "",
-    image: "images/produto-exemplo.jpg",
+    image: "images/Lacre de Segurança para Delivery Açaí.png",
     description: ""
   },
   {
@@ -197,67 +197,6 @@ let selectedCategory = "Todos";
 const categoriesElement = document.getElementById("categories");
 const productsGrid = document.getElementById("productsGrid");
 
-const DEFAULT_IMAGE = "images/default-product.svg";
-
-function normalizeProductImage(value) {
-  if (!value || typeof value !== "string") {
-    return DEFAULT_IMAGE;
-  }
-
-  let cleaned = value.trim();
-
-  if (!cleaned) {
-    return DEFAULT_IMAGE;
-  }
-
-  if (/^[A-Za-z]:\\/.test(cleaned) || /^[A-Za-z]:\//.test(cleaned)) {
-    console.warn("Caminho local de computador ignorado:", cleaned);
-    return DEFAULT_IMAGE;
-  }
-
-  if (/^(https?:)?\/\//i.test(cleaned) || cleaned.startsWith("data:")) {
-    return cleaned;
-  }
-
-  cleaned = cleaned.replace(/\\/g, "/");
-  cleaned = cleaned.replace(/^\/+/, "");
-  cleaned = cleaned.replace(/^\.\//, "");
-  cleaned = cleaned.replace(/^imagens\//i, "images/");
-
-  if (!cleaned) {
-    return DEFAULT_IMAGE;
-  }
-
-  if (cleaned.startsWith("images/images/")) {
-    cleaned = cleaned.replace(/^images\/images\//i, "images/");
-  }
-
-  if (!cleaned.startsWith("images/")) {
-    cleaned = `images/${cleaned}`;
-  }
-
-  return cleaned;
-}
-
-function getProductImagePath(product) {
-  const candidates = [
-    product?.image,
-    product?.imagem,
-    product?.imageUrl,
-    product?.imagePath
-  ];
-
-  for (const candidate of candidates) {
-    const normalized = normalizeProductImage(candidate);
-
-    if (normalized && normalized !== DEFAULT_IMAGE) {
-      return normalized;
-    }
-  }
-
-  return DEFAULT_IMAGE;
-}
-
 function escapeHTML(value) {
   return String(value || "").replace(/[&<>"']/g, char => ({
     "&": "&amp;",
@@ -306,17 +245,13 @@ function renderProducts() {
     return;
   }
 
-  productsGrid.innerHTML = filteredProducts.map(product => {
-    const productImagePath = getProductImagePath(product);
-    console.log("caminho final utilizado:", productImagePath);
-
-    return `
+  productsGrid.innerHTML = filteredProducts.map(product => `
       <article class="product-card">
         <div class="product-image">
           <img
-            src="${escapeHTML(productImagePath)}"
+            src="${escapeHTML(product.image || "")}"
+            data-image-path="${escapeHTML(product.image || "")}"
             alt="${escapeHTML(product.name)}"
-            onerror="console.error('Erro ao carregar imagem:', this.src); this.src='images/default-product.svg';"
           >
         </div>
 
@@ -348,8 +283,17 @@ function renderProducts() {
           </a>
         </div>
       </article>
-    `;
-  }).join("");
+    `).join("");
+
+  productsGrid.querySelectorAll("img[data-image-path]").forEach(image => {
+    const imagePath = image.dataset.imagePath;
+
+    image.onerror = () => {
+      console.error("Erro ao carregar imagem do catálogo:", imagePath);
+      image.alt = `${image.alt} - imagem não encontrada`;
+      image.removeAttribute("src");
+    };
+  });
 }
 
 function render() {
