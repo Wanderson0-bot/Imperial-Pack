@@ -262,7 +262,7 @@ function renderCart() {
 function renderCategories() {
   if (!categoriesElement) return;
 
-  const categories = ["Todos", "Delivery", "Descartáveis", "Ecológicos", "Acessórios"];
+  const categories = ["Todos", "Delivery", "Descartáveis", "Ecológicos", "Biodegradavel", "Acessórios"];
   categoriesElement.innerHTML = categories.map(category => `
     <button
       class="category-button ${selectedCategory === category ? "active" : ""}"
