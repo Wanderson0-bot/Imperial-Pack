@@ -1,0 +1,186 @@
+[
+  {
+    "id": "marmitex-isopor-tm-102-750ml-totalplast",
+    "name": "Marmitex de Isopor TM 102 750ml Totalplast",
+    "category": "Descartáveis",
+    "price": "",
+    "image": "images/Marmitex de Isopor TM 102 750ml Totalplast.png",
+    "description": ""
+  },
+  {
+    "id": "marmitex-isopor-tm-104-1100ml-totalplast",
+    "name": "Marmitex de Isopor TM 104 1100ml Totalplast",
+    "category": "Descartáveis",
+    "price": "",
+    "image": "",
+    "description": ""
+  },
+  {
+    "id": "copo-ps-200ml-branco-totalplast",
+    "name": "Copo PS 200ml Branco Totalplast",
+    "category": "Descartáveis",
+    "price": "",
+    "image": "",
+    "description": ""
+  },
+  {
+    "id": "copo-ps-branco-50ml-totalplast",
+    "name": "Copo PS Branco 50ml Totalplast",
+    "category": "Descartáveis",
+    "price": "",
+    "image": "",
+    "description": ""
+  },
+  {
+    "id": "guardanapos-flumen-18x20cm",
+    "name": "Guardanapos Flumen 18x20cm",
+    "category": "Descartáveis",
+    "price": "",
+    "image": "",
+    "description": ""
+  },
+  {
+    "id": "papel-acoplado-food-30x38cm",
+    "name": "Papel Acoplado Food 30x38cm",
+    "category": "Delivery",
+    "price": "",
+    "image": "",
+    "description": ""
+  },
+  {
+    "id": "pote-molho-30ml-p-695-preto",
+    "name": "Pote para Molho 30ml P-695 Preto",
+    "category": "Descartáveis",
+    "price": "",
+    "image": "",
+    "description": ""
+  },
+  {
+    "id": "pote-molho-30ml-p-695-branco",
+    "name": "Pote para Molho 30ml P-695 Branco",
+    "category": "Descartáveis",
+    "price": "",
+    "image": "",
+    "description": ""
+  },
+  {
+    "id": "pote-termico-mr-300ml-sem-tampa",
+    "name": "Pote Térmico Descartável MR 300ml sem tampa",
+    "category": "Descartáveis",
+    "price": "",
+    "image": "",
+    "description": ""
+  },
+  {
+    "id": "tampa-pote-mr-200-mr-300ml",
+    "name": "Tampa para Pote MR 200/MR 300ml",
+    "category": "Descartáveis",
+    "price": "",
+    "image": "",
+    "description": ""
+  },
+  {
+    "id": "pote-termico-mr-500ml",
+    "name": "Pote Térmico Descartável MR 500ml",
+    "category": "Descartáveis",
+    "price": "",
+    "image": "",
+    "description": ""
+  },
+  {
+    "id": "tampa-pote-mr-500ml",
+    "name": "Tampa para Pote MR 500ml",
+    "category": "Descartáveis",
+    "price": "",
+    "image": "",
+    "description": ""
+  },
+  {
+    "id": "lacre-seguranca-delivery-acai",
+    "name": "Lacre de Segurança para Delivery Açaí",
+    "category": "Acessórios",
+    "price": "",
+    "image": "images/Lacre de Segurança para Delivery Açaí.png",
+    "description": ""
+  },
+  {
+    "id": "lacre-seguranca-delivery-hamburguer",
+    "name": "Lacre de Segurança para Delivery Hambúrguer",
+    "category": "Acessórios",
+    "price": "",
+    "image": "images/Lacre de Segurança para Delivery Hambúrguer.png",
+    "description": ""
+  },
+  {
+    "id": "lacre-seguranca-delivery-simples",
+    "name": "Lacre de Segurança para Delivery Simples",
+    "category": "Acessórios",
+    "price": "",
+    "image": "images/Lacre de Segurança para Delivery Açaí.png",
+    "description": ""
+  },
+  {
+    "id": "papel-aluminio-inoven-30cm-100m",
+    "name": "Papel Alumínio Inoven 30cm 100m",
+    "category": "Acessórios",
+    "price": "",
+    "image": "",
+    "description": ""
+  },
+  {
+    "id": "papel-manteiga-29x50m",
+    "name": "Papel Manteiga 29x50m",
+    "category": "Acessórios",
+    "price": "",
+    "image": "",
+    "description": ""
+  },
+  {
+    "id": "hamburgueira-de-isopor",
+    "name": "Hamburgueira de Isopor",
+    "category": "Delivery",
+    "price": "",
+    "image": "",
+    "description": ""
+  },
+  {
+    "id": "garfo-descartavel-extra-forte-branco-plastla",
+    "name": "Garfo Descartável Extra Forte Branco Plastla",
+    "category": "Descartáveis",
+    "price": "",
+    "image": "",
+    "description": ""
+  },
+  {
+    "id": "colher-descartavel-extra-forte-branca-plastlab",
+    "name": "Colher Descartável Extra Forte Branca Plastlab",
+    "category": "Descartáveis",
+    "price": "",
+    "image": "",
+    "description": ""
+  },
+  {
+    "id": "saco-hamburguer-kraft",
+    "name": "Saco de Hambúrguer Kraft",
+    "category": "Delivery",
+    "price": "",
+    "image": "",
+    "description": ""
+  },
+  {
+    "id": "saco-termico-espetinho-delivery",
+    "name": "Saco Térmico para Espetinho Delivery",
+    "category": "Delivery",
+    "price": "",
+    "image": "",
+    "description": ""
+  },
+  {
+    "id": "saco-pastel-simples",
+    "name": "Saco para Pastel Simples",
+    "category": "Delivery",
+    "price": "",
+    "image": "",
+    "description": ""
+  }
+]

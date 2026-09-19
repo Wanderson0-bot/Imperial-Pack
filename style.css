@@ -690,6 +690,17 @@ textarea {
   margin-bottom: 22px;
 }
 
+.admin-status,
+.admin-help {
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.admin-status {
+  margin: 12px 0 0;
+}
+
 .admin-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -785,6 +796,20 @@ textarea {
   width: 100%;
   margin-top: 8px;
   border: none;
+}
+
+.export-card .card-title {
+  align-items: flex-start;
+}
+
+.export-button {
+  width: auto;
+  margin-top: 0;
+  white-space: nowrap;
+}
+
+.admin-help {
+  margin: 0;
 }
 
 .product-count {

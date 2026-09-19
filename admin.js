@@ -1,24 +1,4 @@
-﻿const STORAGE_KEY = "imperialProducts";
-const BASE_PRODUCTS = Array.isArray(window.defaultProducts) ? window.defaultProducts : [];
-
-function loadProductsFromStorage() {
-  try {
-    const storedProducts = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (Array.isArray(storedProducts) && storedProducts.length > 0) {
-      return storedProducts;
-    }
-  } catch (error) {
-    console.warn("Erro ao carregar produtos do localStorage:", error);
-  }
-
-  if (BASE_PRODUCTS.length) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(BASE_PRODUCTS));
-  }
-
-  return BASE_PRODUCTS;
-}
-
-let products = loadProductsFromStorage();
+﻿let products = [];
 let editingId = null;
 
 const form = document.getElementById("productForm");
@@ -35,6 +15,8 @@ const productDescription = document.getElementById("productDescription");
 const imagePreview = document.getElementById("imagePreview");
 const imageHelp = document.getElementById("imageHelp");
 const formTitle = document.getElementById("formTitle");
+const adminStatus = document.getElementById("adminStatus");
+const exportProductsButton = document.getElementById("exportProductsButton");
 
 function getImagePath(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -87,8 +69,20 @@ function updateImagePreview(value) {
   setImageMessage(`Procurando imagem: ${imagePath}`);
 }
 
-function saveToStorage() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+function setAdminStatus(message, isError = false) {
+  if (!adminStatus) return;
+  adminStatus.textContent = message;
+  adminStatus.classList.toggle("image-error", isError);
+}
+
+function exportProducts() {
+  const file = new Blob([`${JSON.stringify(products, null, 2)}\n`], { type: "application/json" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(file);
+  link.download = "products.json";
+  link.click();
+  URL.revokeObjectURL(link.href);
+  setAdminStatus("products.json exportado. Substitua o arquivo no projeto e faça commit/push no GitHub.");
 }
 
 function escapeHTML(value) {
@@ -148,10 +142,9 @@ if (form) {
       products.push(product);
     }
 
-    saveToStorage();
     clearForm();
     renderAdminProducts();
-    alert("Produto salvo com sucesso!");
+    setAdminStatus("Alteração feita apenas nesta sessão. Baixe products.json para publicar no GitHub.");
   });
 }
 
@@ -199,8 +192,8 @@ function deleteProduct(id) {
   if (!confirmed) return;
 
   products = products.filter(item => item.id !== id);
-  saveToStorage();
   renderAdminProducts();
+  setAdminStatus("Produto excluído apenas nesta sessão. Baixe products.json para publicar no GitHub.");
 }
 
 function renderAdminProducts() {
@@ -252,4 +245,25 @@ function renderAdminProducts() {
 }
 
 clearForm();
-renderAdminProducts();
+
+if (exportProductsButton) exportProductsButton.addEventListener("click", exportProducts);
+
+async function loadProducts() {
+  try {
+    const response = await fetch("products.json", { cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    const loadedProducts = await response.json();
+    if (!Array.isArray(loadedProducts)) throw new Error("Formato inválido");
+
+    products = loadedProducts;
+    renderAdminProducts();
+    setAdminStatus("Produtos carregados de products.json. As alterações ficam nesta sessão até a exportação.");
+  } catch (error) {
+    console.error("Erro ao carregar products.json:", error);
+    setAdminStatus("Não foi possível carregar products.json. Nenhuma lista local foi usada.", true);
+    renderAdminProducts();
+  }
+}
+
+loadProducts();

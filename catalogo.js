@@ -1,24 +1,5 @@
-﻿const PRODUCTS_KEY = "imperialProducts";
-const CART_KEY = "imperialCart";
+﻿const CART_KEY = "imperialCart";
 const WHATSAPP_NUMBER = "558581942691";
-
-function loadProducts() {
-  try {
-    const savedProducts = JSON.parse(localStorage.getItem(PRODUCTS_KEY));
-    if (Array.isArray(savedProducts) && savedProducts.length > 0) {
-      return savedProducts;
-    }
-  } catch (error) {
-    console.warn("Erro ao ler produtos do localStorage:", error);
-  }
-
-  const baseProducts = Array.isArray(window.defaultProducts) ? window.defaultProducts : [];
-  if (baseProducts.length) {
-    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(baseProducts));
-  }
-
-  return baseProducts;
-}
 
 function loadCart() {
   try {
@@ -36,7 +17,8 @@ function loadCart() {
   return [];
 }
 
-let products = loadProducts();
+let products = null;
+let productsLoadError = false;
 let cart = loadCart();
 let selectedCategory = "Todos";
 
@@ -262,7 +244,7 @@ function renderCart() {
 function renderCategories() {
   if (!categoriesElement) return;
 
-  const categories = ["Todos", "Delivery", "Descartáveis", "Ecológicos", "Biodegradavel", "Acessórios"];
+  const categories = ["Todos", ...new Set((products || []).map(product => product.category).filter(Boolean))];
   categoriesElement.innerHTML = categories.map(category => `
     <button
       class="category-button ${selectedCategory === category ? "active" : ""}"
@@ -281,6 +263,20 @@ function selectCategory(category) {
 
 function renderProducts() {
   if (!productsGrid) return;
+
+  if (productsLoadError) {
+    productsGrid.innerHTML = `
+      <div class="empty-state error-state">
+        Não foi possível carregar o catálogo agora. Tente novamente mais tarde.
+      </div>
+    `;
+    return;
+  }
+
+  if (!Array.isArray(products)) {
+    productsGrid.innerHTML = '<div class="empty-state">Carregando produtos...</div>';
+    return;
+  }
 
   const filteredProducts = selectedCategory === "Todos"
     ? products
@@ -381,3 +377,23 @@ document.addEventListener("keydown", event => {
 });
 
 render();
+
+async function loadProducts() {
+  try {
+    const response = await fetch("products.json", { cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    const loadedProducts = await response.json();
+    if (!Array.isArray(loadedProducts)) throw new Error("Formato inválido");
+
+    products = loadedProducts;
+  } catch (error) {
+    console.error("Erro ao carregar products.json:", error);
+    products = [];
+    productsLoadError = true;
+  }
+
+  render();
+}
+
+loadProducts();

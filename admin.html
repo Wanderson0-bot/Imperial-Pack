@@ -21,7 +21,8 @@
     <section class="admin-heading">
       <span class="eyebrow">ADMINISTRAÇÃO</span>
       <h1>Gerenciar produtos</h1>
-      <p>Adicione, edite ou remova produtos do catálogo.</p>
+      <p>Adicione, edite ou remova produtos e exporte o arquivo atualizado para publicar no GitHub.</p>
+      <p id="adminStatus" class="admin-status" role="status">Carregando products.json...</p>
     </section>
 
     <section class="admin-card">
@@ -87,7 +88,7 @@
         ></textarea>
 
         <button type="submit" class="primary-button">
-          Salvar produto
+          Salvar na exportação
         </button>
 
       </form>
@@ -102,9 +103,16 @@
       <div id="adminProductsList"></div>
     </section>
 
+    <section class="admin-card export-card">
+      <div class="card-title">
+        <h2>Publicar alterações</h2>
+        <button class="primary-button export-button" id="exportProductsButton" type="button">Baixar products.json</button>
+      </div>
+      <p class="admin-help">O download não altera o GitHub automaticamente. Substitua o arquivo products.json do projeto pelo arquivo baixado e faça commit e push. Se houver uma imagem nova, copie-a também para images/.</p>
+    </section>
+
   </main>
 
-  <script src="products-data.js"></script>
   <script src="admin.js"></script>
 </body>
 </html>
