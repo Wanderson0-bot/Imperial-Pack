@@ -50,6 +50,15 @@ const cartItems = document.getElementById("cartItems");
 const cartTotal = document.getElementById("cartTotal");
 const checkoutButton = document.getElementById("checkoutButton");
 const cartCount = document.getElementById("cartCount");
+const productModal = document.getElementById("productModal");
+const modalProductImage = document.getElementById("modalProductImage");
+const modalProductCategory = document.getElementById("modalProductCategory");
+const modalProductName = document.getElementById("modalProductName");
+const modalProductDescription = document.getElementById("modalProductDescription");
+const modalProductPrice = document.getElementById("modalProductPrice");
+const modalProductPresentation = document.getElementById("modalProductPresentation");
+const modalAddToCart = document.getElementById("modalAddToCart");
+let selectedProductId = null;
 
 function escapeHTML(value) {
   return String(value || "").replace(/[&<>\"']/g, char => ({
@@ -93,6 +102,33 @@ function closeCart() {
   if (cartDrawer) {
     cartDrawer.classList.remove("open");
   }
+}
+
+function getPresentation(product) {
+  return product.presentation || product.quantity || product.package || "";
+}
+
+function openProductDetails(productId) {
+  const product = products.find(item => item.id === productId);
+  if (!product || !productModal) return;
+
+  selectedProductId = product.id;
+  modalProductImage.src = product.image || getDefaultProductImage();
+  modalProductImage.alt = product.name;
+  modalProductCategory.textContent = product.category || "";
+  modalProductName.textContent = product.name;
+  modalProductDescription.textContent = product.description || "Detalhes disponíveis para atendimento personalizado.";
+  modalProductPrice.textContent = product.price || "Preço sob consulta";
+  modalProductPresentation.textContent = getPresentation(product);
+  productModal.hidden = false;
+  document.body.classList.add("modal-open");
+}
+
+function closeProductDetails() {
+  if (!productModal) return;
+  productModal.hidden = true;
+  document.body.classList.remove("modal-open");
+  selectedProductId = null;
 }
 
 function updateCartCount() {
@@ -260,7 +296,7 @@ function renderProducts() {
   }
 
   productsGrid.innerHTML = filteredProducts.map(product => `
-    <article class="product-card">
+    <article class="product-card" data-product-details="${product.id}">
       <div class="product-image">
         <img
           src="${escapeHTML(product.image || getDefaultProductImage())}"
@@ -270,12 +306,11 @@ function renderProducts() {
       </div>
 
       <div class="product-content">
-        <span class="product-category">${escapeHTML(product.category)}</span>
         <h3 class="product-name">${escapeHTML(product.name)}</h3>
-        <p class="product-description">${escapeHTML(product.description || "Produto disponível para atendimento personalizado.")}</p>
+        ${getPresentation(product) ? `<span class="product-presentation">${escapeHTML(getPresentation(product))}</span>` : ""}
         <div class="product-footer">
-          <strong class="product-price">${escapeHTML(product.price || "Preço sob consulta")}</strong>
-          <button type="button" class="add-to-cart" data-add-to-cart="${product.id}">Adicionar ao carrinho</button>
+          <div><strong class="product-price">${escapeHTML(product.price || "Preço sob consulta")}</strong></div>
+          <button type="button" class="add-to-cart" data-add-to-cart="${product.id}">+ Adicionar</button>
         </div>
       </div>
     </article>
@@ -300,8 +335,13 @@ if (categoriesElement) {
 if (productsGrid) {
   productsGrid.addEventListener("click", (event) => {
     const button = event.target.closest("[data-add-to-cart]");
-    if (!button) return;
-    addToCart(button.dataset.addToCart);
+    if (button) {
+      event.stopPropagation();
+      addToCart(button.dataset.addToCart);
+      return;
+    }
+    const card = event.target.closest("[data-product-details]");
+    if (card) openProductDetails(card.dataset.productDetails);
   });
 }
 
@@ -330,5 +370,14 @@ if (cartButton) cartButton.addEventListener("click", openCart);
 if (heroCartButton) heroCartButton.addEventListener("click", openCart);
 if (closeCartButton) closeCartButton.addEventListener("click", closeCart);
 if (checkoutButton) checkoutButton.addEventListener("click", handleCheckout);
+if (modalAddToCart) modalAddToCart.addEventListener("click", () => {
+  if (selectedProductId) addToCart(selectedProductId);
+});
+if (productModal) productModal.addEventListener("click", event => {
+  if (event.target.closest("[data-close-product]")) closeProductDetails();
+});
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") closeProductDetails();
+});
 
 render();

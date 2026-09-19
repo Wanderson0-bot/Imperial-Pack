@@ -12,10 +12,7 @@
     <div class="container header-content">
       <a class="brand" href="#top" aria-label="Imperial Pack home">
         <img class="brand-logo" src="Public/Simbolo Isolado.png" alt="Imperial Pack" />
-        <div class="brand-text">
-          <strong>IMPERIAL <span>PACK</span></strong>
-          <small>Embalagens para todos os negócios.</small>
-        </div>
+        <div class="brand-text"><strong>IMPERIAL <span>PACK</span></strong></div>
       </a>
 
       <nav class="header-nav" aria-label="Navegação principal">
@@ -34,34 +31,25 @@
   <main id="top" class="page-shell">
     <section class="hero container">
       <div class="hero-copy">
-        <span class="eyebrow">SOLUÇÕES EM EMBALAGENS</span>
         <h1>Embalagens para todos os negócios.</h1>
         <p>
-          A Imperial Pack oferece soluções práticas e confiáveis para delivery, descartáveis,
-          produtos ecológicos e acessórios que apoiam o crescimento do seu negócio.
+          Encontre embalagens práticas e confiáveis para o dia a dia do seu negócio.
         </p>
 
         <div class="hero-actions">
           <a href="#produtos" class="primary-link">Ver produtos</a>
-          <button id="heroCartButton" type="button" class="secondary-button">Abrir carrinho</button>
         </div>
       </div>
 
     </section>
 
     <section id="categorias" class="container categories-section">
-      <div class="section-heading">
-        <span class="eyebrow dark">Categorias</span>
-        <h2>Encontre o que seu negócio precisa</h2>
-      </div>
+      <div class="section-heading"><h2>Escolha uma categoria</h2></div>
       <nav class="categories" id="categories" aria-label="Categorias de produtos"></nav>
     </section>
 
     <section id="produtos" class="container products-section">
-      <div class="section-heading">
-        <span class="eyebrow dark">Catálogo</span>
-        <h2>Produtos em destaque</h2>
-      </div>
+      <div class="section-heading"><h2>Produtos</h2></div>
       <div class="products-grid" id="productsGrid"></div>
     </section>
   </main>
@@ -83,6 +71,24 @@
     </div>
   </aside>
 
+  <div class="product-modal" id="productModal" hidden>
+    <div class="product-modal-backdrop" data-close-product></div>
+    <section class="product-modal-content" role="dialog" aria-modal="true" aria-labelledby="modalProductName">
+      <button class="product-modal-close" type="button" data-close-product aria-label="Fechar detalhes">×</button>
+      <img id="modalProductImage" class="modal-product-image" src="images/default-product.svg" alt="" />
+      <div class="modal-product-body">
+        <span id="modalProductCategory" class="product-category"></span>
+        <h2 id="modalProductName"></h2>
+        <p id="modalProductDescription"></p>
+        <div class="modal-product-buy">
+          <strong id="modalProductPrice"></strong>
+          <span id="modalProductPresentation"></span>
+        </div>
+        <button id="modalAddToCart" class="add-to-cart modal-add-button" type="button">Adicionar ao carrinho</button>
+      </div>
+    </section>
+  </div>
+
   <footer id="contato" class="site-footer">
     <div class="container footer-grid">
       <div class="footer-brand">
@@ -93,7 +99,7 @@
       </div>
 
       <div class="footer-column">
-        <h4>Categoria</h4>
+          <h4>Categorias</h4>
         <ul>
           <li>Delivery</li>
           <li>Descartáveis</li>
@@ -106,13 +112,13 @@
         <h4>Contato</h4>
         <ul>
           <li><a href="https://wa.me/558581942691" target="_blank" rel="noreferrer">WhatsApp</a></li>
-          <li>Atendimento comercial</li>
+          <li>Instagram</li>
         </ul>
       </div>
     </div>
 
     <div class="footer-bottom">
-      <p>© 2026 Imperial Pack. Todos os direitos reservados.</p>
+      <p>© 2026 Imperial Pack</p>
     </div>
   </footer>
 
