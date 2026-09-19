@@ -100,7 +100,7 @@ function openProductDetails(productId) {
   modalProductCategory.textContent = product.category || "";
   modalProductName.textContent = product.name;
   modalProductDescription.textContent = product.description || "Detalhes disponíveis para atendimento personalizado.";
-  modalProductPrice.textContent = product.price || "Preço sob consulta";
+  modalProductPrice.textContent = product.price ? formatCurrency(parsePrice(product.price)) : "Preço sob consulta";
   modalProductPresentation.textContent = getPresentation(product);
   productModal.hidden = false;
   document.body.classList.add("modal-open");
@@ -305,7 +305,7 @@ function renderProducts() {
         <h3 class="product-name">${escapeHTML(product.name)}</h3>
         ${getPresentation(product) ? `<span class="product-presentation">${escapeHTML(getPresentation(product))}</span>` : ""}
         <div class="product-footer">
-          <div><strong class="product-price">${escapeHTML(product.price || "Preço sob consulta")}</strong></div>
+          <div><strong class="product-price">${escapeHTML(product.price ? formatCurrency(parsePrice(product.price)) : "Preço sob consulta")}</strong></div>
           <button type="button" class="add-to-cart" data-add-to-cart="${product.id}">+ Adicionar</button>
         </div>
       </div>

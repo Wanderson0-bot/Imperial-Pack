@@ -22,6 +22,12 @@ function getImagePath(value) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+function formatProductPrice(value) {
+  if (value === "" || value === null || value === undefined) return "Preço não definido";
+  const numericValue = Number(String(value).replace(/[^0-9,.-]/g, "").replace(/\./g, "").replace(",", "."));
+  return Number.isFinite(numericValue) ? new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(numericValue) : "Preço não definido";
+}
+
 function setImageMessage(message, isError = false) {
   if (!imageHelp) return;
   imageHelp.textContent = message;
@@ -224,7 +230,7 @@ function renderAdminProducts() {
           <small>
             ${escapeHTML(product.category)}
             •
-            ${escapeHTML(product.price || "Preço não definido")}
+            ${escapeHTML(formatProductPrice(product.price))}
           </small>
         </div>
 

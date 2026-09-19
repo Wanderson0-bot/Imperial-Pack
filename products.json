@@ -1,8 +1,8 @@
 [
   {
     "id": "marmitex-isopor-tm-104-1100ml-totalplast",
-    "name": "Marmita de Isopor 1100ml",
-    "category": "Descartáveis",
+    "category": "Delivery",
+    "category": "Delivery",
     "price": 70.00,
     "presentation": "100 unidades",
     "image": "images/Marmitex de Isopor TM 104 1100ml Totalplast.png",
@@ -38,7 +38,7 @@
   {
     "id": "marmitex-isopor-tm-102-750ml-totalplast",
     "name": "Marmita de Isopor 750ml",
-    "category": "Descartáveis",
+    "category": "Delivery",
     "price": 50.00,
     "presentation": "100 unidades",
     "image": "images/Marmitex de Isopor TM 102 750ml Totalplast.png",
@@ -92,7 +92,7 @@
   {
     "id": "copo-plastico-liso-totalplast-300ml",
     "name": "Copo Plástico Liso Totalplast 300ml",
-    "category": "Descartáveis",
+    "category": "Delivery",
     "price": 18.02,
     "presentation": "100 unidades",
     "image": "",
@@ -101,7 +101,7 @@
   {
     "id": "kit-pote-redondo-500ml-totalplast",
     "name": "Kit Pote Redondo 500ml – Totalplast",
-    "category": "Descartáveis",
+    "category": "Delivery",
     "price": 20.00,
     "presentation": "24 unidades",
     "image": "",
@@ -110,7 +110,7 @@
   {
     "id": "embalagem-quadrada-doces-pf-641-prafesta",
     "name": "Embalagem Quadrada para Doces PF 641 – Prafesta",
-    "category": "Descartáveis",
+    "category": "Delivery",
     "price": 3.30,
     "presentation": "10 unidades",
     "image": "",
@@ -119,7 +119,7 @@
   {
     "id": "tampuca-isopor-totalplast-15cm",
     "name": "Cumbuca Isopor Totalplast 15cm",
-    "category": "Descartáveis",
+    "category": "Delivery",
     "price": 4.70,
     "presentation": "20 unidades",
     "image": "images/Cumbuca Isopor Totalplast 15cm.png",
@@ -128,7 +128,7 @@
   {
     "id": "copo-termico-isopor-240ml",
     "name": "PoteTermico Descartavel De Isopor 240ml",
-    "category": "Descartáveis",
+    "category": "Delivery",
     "price": 17.50,
     "presentation": "25 unidades",
     "image": "images/PoteTermico Descartavel De Isopor 240ml.png",
@@ -146,7 +146,7 @@
   {
     "id": "tampa-pote-mr-200-mr-300ml",
     "name": "Tampa Isopor P – Pote MR 200 e MR 300ml",
-    "category": "Descartáveis",
+    "category": "Delivery",
     "price": 18.50,
     "presentation": "50 unidades",
     "image": "images/Tampa para Pote MR 200 MR 300ml.webp",
@@ -155,7 +155,7 @@
   {
     "id": "pote-termico-mr-300ml-sem-tampa",
     "name": "Pote Térmico Descartável de Isopor 300ml",
-    "category": "Descartáveis",
+    "category": "Delivery",
     "price": 20.00,
     "presentation": "50 unidades",
     "image": "images/Pote Térmico Descartável MR 300ml sem tampa.webp",
@@ -164,7 +164,7 @@
   {
     "id": "pote-termico-mr-500ml",
     "name": "Pote Térmico Descartável de Isopor 500ml",
-    "category": "Descartáveis",
+    "category": "Delivery",
     "price": 33.50,
     "presentation": "50 unidades",
     "image": "images/Pote Térmico Descartável MR 500ml.webp",
@@ -173,7 +173,7 @@
   {
     "id": "tampa-pote-mr-500ml",
     "name": "Tampa Isopor P – Pote MR 500ml",
-    "category": "Descartáveis",
+    "category": "Delivery",
     "price": 23.13,
     "presentation": "50 unidades",
     "image": "images/Tampa para Pote MR 500ml.webp",
@@ -254,7 +254,7 @@
   {
     "id": "pote-molho-30ml-p-695-preto",
     "name": "Pote para Molho 30ml Preto",
-    "category": "Descartáveis",
+    "category": "Delivery",
     "price": 36.73,
     "presentation": "100 unidades",
     "image": "images/Pote para Molho 30ml P-695 Preto.webp",
@@ -263,7 +263,7 @@
   {
     "id": "pote-molho-30ml-p-695-branco",
     "name": "Pote para Molho 30ml Branco",
-    "category": "Descartáveis",
+    "category": "Delivery",
     "price": 32.16,
     "presentation": "100 unidades",
     "image": "images/Pote para Molho 30ml P-695 Branco.png",
