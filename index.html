@@ -3,39 +3,120 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Imperial Pack | Catálogo</title>
+  <title>Imperial Pack | Embalagens para todos os negócios</title>
+  <meta name="description" content="Imperial Pack oferece embalagens para delivery, descartáveis, ecológicos e acessórios para negócios." />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <header class="site-header">
+    <div class="container header-content">
+      <a class="brand" href="#top" aria-label="Imperial Pack home">
+        <img class="brand-logo" src="Public/Simbolo Isolado.png" alt="Imperial Pack" />
+        <div class="brand-text">
+          <strong>IMPERIAL <span>PACK</span></strong>
+          <small>Embalagens para todos os negócios.</small>
+        </div>
+      </a>
 
-  <header class="header">
-    <div class="header-content">
-      <div class="brand">
-        <strong>IMPERIAL <span>PACK</span></strong>
-        <small>Embalagens para todos os negócios.</small>
-      </div>
+      <nav class="header-nav" aria-label="Navegação principal">
+        <a href="#produtos">Produtos</a>
+        <a href="#categorias">Categorias</a>
+        <a href="#contato">Contato</a>
+      </nav>
+
+      <button class="cart-button" id="cartButton" type="button" aria-label="Abrir carrinho">
+        <img class="cart-icon" src="Public/icons8-shopping-cart-48.png" alt="" aria-hidden="true" />
+        <span class="cart-badge" id="cartCount">0</span>
+      </button>
     </div>
   </header>
 
-  <main class="container">
+  <main id="top" class="page-shell">
+    <section class="hero container">
+      <div class="hero-copy">
+        <span class="eyebrow">SOLUÇÕES EM EMBALAGENS</span>
+        <h1>Embalagens para todos os negócios.</h1>
+        <p>
+          A Imperial Pack oferece soluções práticas e confiáveis para delivery, descartáveis,
+          produtos ecológicos e acessórios que apoiam o crescimento do seu negócio.
+        </p>
 
-    <section class="hero">
-      <span class="eyebrow">CATÁLOGO DIGITAL</span>
-      <h1>Embalagens para o seu negócio</h1>
-      <p>Confira nossas opções de produtos para delivery, alimentação e comércio.</p>
+        <div class="hero-actions">
+          <a href="#produtos" class="primary-link">Ver produtos</a>
+          <button id="heroCartButton" type="button" class="secondary-button">Abrir carrinho</button>
+        </div>
+      </div>
+
     </section>
 
-    <nav class="categories" id="categories"></nav>
+    <section id="categorias" class="container categories-section">
+      <div class="section-heading">
+        <span class="eyebrow dark">Categorias</span>
+        <h2>Encontre o que seu negócio precisa</h2>
+      </div>
+      <nav class="categories" id="categories" aria-label="Categorias de produtos"></nav>
+    </section>
 
-    <section class="products-grid" id="productsGrid"></section>
-
+    <section id="produtos" class="container products-section">
+      <div class="section-heading">
+        <span class="eyebrow dark">Catálogo</span>
+        <h2>Produtos em destaque</h2>
+      </div>
+      <div class="products-grid" id="productsGrid"></div>
+    </section>
   </main>
 
-  <footer class="footer">
-    <strong>Imperial Pack</strong>
-    <p>Embalagens para todos os negócios.</p>
+  <aside class="cart-drawer" id="cartDrawer" aria-label="Carrinho de compras">
+    <div class="cart-header">
+      <h3>Seu carrinho</h3>
+      <button type="button" class="close-cart" id="closeCart" aria-label="Fechar carrinho">×</button>
+    </div>
+
+    <div class="cart-items" id="cartItems"></div>
+
+    <div class="cart-footer">
+      <div class="cart-total-row">
+        <span>Total</span>
+        <strong id="cartTotal">R$ 0,00</strong>
+      </div>
+      <button id="checkoutButton" type="button" class="checkout-button">Finalizar pedido pelo WhatsApp</button>
+    </div>
+  </aside>
+
+  <footer id="contato" class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <div>
+          <strong>Imperial Pack</strong>
+          <p>Embalagens para todos os negócios.</p>
+        </div>
+      </div>
+
+      <div class="footer-column">
+        <h4>Categoria</h4>
+        <ul>
+          <li>Delivery</li>
+          <li>Descartáveis</li>
+          <li>Ecológicos</li>
+          <li>Acessórios</li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>Contato</h4>
+        <ul>
+          <li><a href="https://wa.me/558581942691" target="_blank" rel="noreferrer">WhatsApp</a></li>
+          <li>Atendimento comercial</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 Imperial Pack. Todos os direitos reservados.</p>
+    </div>
   </footer>
 
+  <script src="products-data.js"></script>
   <script src="catalogo.js"></script>
 </body>
 </html>

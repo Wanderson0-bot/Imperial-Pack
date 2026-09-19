@@ -1,8 +1,26 @@
-let products = JSON.parse(localStorage.getItem("imperialProducts")) || [];
+﻿const STORAGE_KEY = "imperialProducts";
+const BASE_PRODUCTS = Array.isArray(window.defaultProducts) ? window.defaultProducts : [];
 
+function loadProductsFromStorage() {
+  try {
+    const storedProducts = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (Array.isArray(storedProducts) && storedProducts.length > 0) {
+      return storedProducts;
+    }
+  } catch (error) {
+    console.warn("Erro ao carregar produtos do localStorage:", error);
+  }
+
+  if (BASE_PRODUCTS.length) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(BASE_PRODUCTS));
+  }
+
+  return BASE_PRODUCTS;
+}
+
+let products = loadProductsFromStorage();
 let editingId = null;
 
-const STORAGE_KEY = "imperialProducts";
 const form = document.getElementById("productForm");
 const productCount = document.getElementById("productCount");
 const adminProductsList = document.getElementById("adminProductsList");
@@ -23,6 +41,7 @@ function getImagePath(value) {
 }
 
 function setImageMessage(message, isError = false) {
+  if (!imageHelp) return;
   imageHelp.textContent = message;
   imageHelp.classList.toggle("image-error", isError);
 }
@@ -73,7 +92,7 @@ function saveToStorage() {
 }
 
 function escapeHTML(value) {
-  return String(value || "").replace(/[&<>"']/g, char => ({
+  return String(value || "").replace(/[&<>\"']/g, char => ({
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
@@ -82,117 +101,111 @@ function escapeHTML(value) {
   }[char]));
 }
 
-productImage.addEventListener("input", event => {
-  updateImagePreview(event.target.value);
-});
+if (productImage) {
+  productImage.addEventListener("input", event => {
+    updateImagePreview(event.target.value);
+  });
+}
 
-productImageFile.addEventListener("change", event => {
-  const file = event.target.files && event.target.files[0];
+if (productImageFile) {
+  productImageFile.addEventListener("change", event => {
+    const file = event.target.files && event.target.files[0];
 
-  if (!file) {
-    return;
-  }
+    if (!file) {
+      return;
+    }
 
-  const suggestedPath = `images/${file.name}`;
-  productImage.value = suggestedPath;
-  updateImagePreview(suggestedPath);
+    const suggestedPath = `images/${file.name}`;
+    productImage.value = suggestedPath;
+    updateImagePreview(suggestedPath);
 
-  setImageMessage("Arquivo selecionado. Confirme que ele está na pasta images/ do projeto e que o caminho relativo está correto.");
-});
+    setImageMessage("Arquivo selecionado. Confirme que ele está na pasta images/ do projeto e que o caminho relativo está correto.");
+  });
+}
 
-form.addEventListener("submit", event => {
-  event.preventDefault();
+if (form) {
+  form.addEventListener("submit", event => {
+    event.preventDefault();
 
-  const imagePath = productImage.value;
+    const imagePath = productImage ? productImage.value : "";
+    const product = {
+      id: editingId || crypto.randomUUID(),
+      name: productName.value.trim(),
+      category: productCategory.value,
+      price: productPrice.value.trim(),
+      image: imagePath,
+      description: productDescription.value.trim()
+    };
 
-  const product = {
-    id: editingId || crypto.randomUUID(),
-    name: productName.value.trim(),
-    category: productCategory.value,
-    price: productPrice.value.trim(),
-    image: imagePath,
-    description: productDescription.value.trim()
-  };
+    if (!product.name) {
+      alert("Digite o nome do produto.");
+      return;
+    }
 
-  console.log("imagem salva no produto:", product);
-  console.log("caminho final utilizado:", imagePath);
+    if (editingId) {
+      products = products.map(item => item.id === editingId ? product : item);
+    } else {
+      products.push(product);
+    }
 
-  if (!product.name) {
-    alert("Digite o nome do produto.");
-    return;
-  }
-
-  if (editingId) {
-    products = products.map(item =>
-      item.id === editingId ? product : item
-    );
-  } else {
-    products.push(product);
-  }
-
-  saveToStorage();
-  clearForm();
-  renderAdminProducts();
-
-  alert("Produto salvo com sucesso!");
-});
+    saveToStorage();
+    clearForm();
+    renderAdminProducts();
+    alert("Produto salvo com sucesso!");
+  });
+}
 
 function clearForm() {
   editingId = null;
-  productId.value = "";
-  productName.value = "";
-  productCategory.value = "Delivery";
-  productPrice.value = "";
-  productImage.value = "";
-  productImageFile.value = "";
-  productDescription.value = "";
-  imagePreview.removeAttribute("src");
-  imagePreview.hidden = true;
+  if (productId) productId.value = "";
+  if (productName) productName.value = "";
+  if (productCategory) productCategory.value = "Delivery";
+  if (productPrice) productPrice.value = "";
+  if (productImage) productImage.value = "";
+  if (productImageFile) productImageFile.value = "";
+  if (productDescription) productDescription.value = "";
+  if (imagePreview) {
+    imagePreview.removeAttribute("src");
+    imagePreview.hidden = true;
+  }
   setImageMessage("Informe o caminho relativo, por exemplo: images/marmita-750.png");
-  formTitle.textContent = "Adicionar produto";
+  if (formTitle) formTitle.textContent = "Adicionar produto";
 }
 
 function editProduct(id) {
   const product = products.find(item => item.id === id);
-
   if (!product) return;
 
   editingId = id;
-  productId.value = product.id;
-  productName.value = product.name;
-  productCategory.value = product.category;
-  productPrice.value = product.price;
-  productImage.value = getImagePath(product.image);
-  productDescription.value = product.description;
-  productImageFile.value = "";
+  if (productId) productId.value = product.id;
+  if (productName) productName.value = product.name;
+  if (productCategory) productCategory.value = product.category;
+  if (productPrice) productPrice.value = product.price;
+  if (productImage) productImage.value = getImagePath(product.image);
+  if (productDescription) productDescription.value = product.description;
+  if (productImageFile) productImageFile.value = "";
   updateImagePreview(product.image);
 
-  formTitle.textContent = "Editar produto";
+  if (formTitle) formTitle.textContent = "Editar produto";
 
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function deleteProduct(id) {
   const product = products.find(item => item.id === id);
-
   if (!product) return;
 
-  const confirmed = confirm(
-    `Deseja excluir "${product.name}"?`
-  );
-
+  const confirmed = confirm(`Deseja excluir "${product.name}"?`);
   if (!confirmed) return;
 
   products = products.filter(item => item.id !== id);
-
   saveToStorage();
   renderAdminProducts();
 }
 
 function renderAdminProducts() {
+  if (!productCount || !adminProductsList) return;
+
   productCount.textContent = `${products.length} produtos`;
 
   if (!products.length) {
@@ -223,19 +236,8 @@ function renderAdminProducts() {
         </div>
 
         <div class="admin-actions">
-          <button
-            class="edit-button"
-            onclick="editProduct('${product.id}')"
-          >
-            Editar
-          </button>
-
-          <button
-            class="delete-button"
-            onclick="deleteProduct('${product.id}')"
-          >
-            Excluir
-          </button>
+          <button class="edit-button" type="button" onclick="editProduct('${product.id}')">Editar</button>
+          <button class="delete-button" type="button" onclick="deleteProduct('${product.id}')">Excluir</button>
         </div>
       </div>
     `).join("");
