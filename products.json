@@ -1,186 +1,299 @@
 [
   {
-    "id": "marmitex-isopor-tm-102-750ml-totalplast",
-    "name": "Marmitex de Isopor TM 102 750ml Totalplast",
+    "id": "marmitex-isopor-tm-104-1100ml-totalplast",
+    "name": "Marmita de Isopor 1100ml",
     "category": "Descartáveis",
-    "price": "",
-    "image": "images/Marmitex de Isopor TM 102 750ml Totalplast.png",
+    "price": 70.00,
+    "presentation": "100 unidades",
+    "image": "images/Marmitex de Isopor TM 104 1100ml Totalplast.png",
     "description": ""
   },
   {
-    "id": "marmitex-isopor-tm-104-1100ml-totalplast",
-    "name": "Marmitex de Isopor TM 104 1100ml Totalplast",
+    "id": "garfo-descartavel-extra-forte-branco-plastla",
+    "name": "Garfo Descartável Extra Forte Branco – Plastilab",
     "category": "Descartáveis",
-    "price": "",
-    "image": "",
+    "price": 8.20,
+    "presentation": "50 unidades",
+    "image": "images/Garfo Descartável Extra Forte Branco Plastla.png",
+    "description": ""
+  },
+  {
+    "id": "colher-descartavel-extra-forte-branca-plastlab",
+    "name": "Colher Descartável Extra Forte Branca – Plastilab",
+    "category": "Descartáveis",
+    "price": 7.30,
+    "presentation": "50 unidades",
+    "image": "images/Colher Descartável Extra Forte Branca Plastlab.png",
     "description": ""
   },
   {
     "id": "copo-ps-200ml-branco-totalplast",
-    "name": "Copo PS 200ml Branco Totalplast",
+    "name": "Copo Plástico 200ml – Totalplast",
     "category": "Descartáveis",
-    "price": "",
-    "image": "",
+    "price": 5.00,
+    "presentation": "100 unidades",
+    "image": "images/copo-descartavel-200ml-branco-ps.jpg",
+    "description": ""
+  },
+  {
+    "id": "marmitex-isopor-tm-102-750ml-totalplast",
+    "name": "Marmita de Isopor 750ml",
+    "category": "Descartáveis",
+    "price": 50.00,
+    "presentation": "100 unidades",
+    "image": "images/Marmitex de Isopor TM 102 750ml Totalplast.png",
     "description": ""
   },
   {
     "id": "copo-ps-branco-50ml-totalplast",
-    "name": "Copo PS Branco 50ml Totalplast",
+    "name": "Copo Plástico 50ml – Totalplast",
     "category": "Descartáveis",
-    "price": "",
-    "image": "",
-    "description": ""
-  },
-  {
-    "id": "guardanapos-flumen-18x20cm",
-    "name": "Guardanapos Flumen 18x20cm",
-    "category": "Descartáveis",
-    "price": "",
-    "image": "",
+    "price": 3.07,
+    "presentation": "100 unidades",
+    "image": "images/Copo PS Branco 50ml Totalplast.jpg",
     "description": ""
   },
   {
     "id": "papel-acoplado-food-30x38cm",
-    "name": "Papel Acoplado Food 30x38cm",
+    "name": "Papel Acoplado Food 1kg – 30x38cm",
     "category": "Delivery",
-    "price": "",
+    "price": 40.00,
+    "presentation": "1 unidade",
+    "image": "images/Papel Acoplado Food 1kg 30x38cm.jpg",
+    "description": ""
+  },
+  {
+    "id": "guardanapos-flumen-18x20cm",
+    "name": "Fardo de Guardanapo Flume 18x20cm",
+    "category": "Descartáveis",
+    "price": 80.90,
+    "presentation": "50 unidades",
+    "image": "images/Guardanapos Flumen 18x20cm.png",
+    "description": ""
+  },
+  {
+    "id": "caixa-pizza-35cm",
+    "name": "Caixa para Pizza 35cm",
+    "category": "Delivery",
+    "price": 50.00,
+    "presentation": "25 unidades",
     "image": "",
     "description": ""
   },
   {
-    "id": "pote-molho-30ml-p-695-preto",
-    "name": "Pote para Molho 30ml P-695 Preto",
-    "category": "Descartáveis",
-    "price": "",
+    "id": "caixa-pizza-45cm",
+    "name": "Caixa para Pizza 45cm",
+    "category": "Delivery",
+    "price": 75.00,
+    "presentation": "25 unidades",
     "image": "",
     "description": ""
   },
   {
-    "id": "pote-molho-30ml-p-695-branco",
-    "name": "Pote para Molho 30ml P-695 Branco",
+    "id": "copo-plastico-liso-totalplast-300ml",
+    "name": "Copo Plástico Liso Totalplast 300ml",
     "category": "Descartáveis",
-    "price": "",
+    "price": 18.02,
+    "presentation": "100 unidades",
     "image": "",
     "description": ""
   },
   {
-    "id": "pote-termico-mr-300ml-sem-tampa",
-    "name": "Pote Térmico Descartável MR 300ml sem tampa",
+    "id": "kit-pote-redondo-500ml-totalplast",
+    "name": "Kit Pote Redondo 500ml – Totalplast",
     "category": "Descartáveis",
-    "price": "",
+    "price": 20.00,
+    "presentation": "24 unidades",
+    "image": "",
+    "description": ""
+  },
+  {
+    "id": "embalagem-quadrada-doces-pf-641-prafesta",
+    "name": "Embalagem Quadrada para Doces PF 641 – Prafesta",
+    "category": "Descartáveis",
+    "price": 3.30,
+    "presentation": "10 unidades",
+    "image": "",
+    "description": ""
+  },
+  {
+    "id": "tampuca-isopor-totalplast-15cm",
+    "name": "Cumbuca Isopor Totalplast 15cm",
+    "category": "Descartáveis",
+    "price": 4.70,
+    "presentation": "20 unidades",
+    "image": "images/Cumbuca Isopor Totalplast 15cm.png",
+    "description": ""
+  },
+  {
+    "id": "copo-termico-isopor-240ml",
+    "name": "PoteTermico Descartavel De Isopor 240ml",
+    "category": "Descartáveis",
+    "price": 17.50,
+    "presentation": "25 unidades",
+    "image": "images/PoteTermico Descartavel De Isopor 240ml.png",
+    "description": ""
+  },
+  {
+    "id": "pote-termico-isopor-360ml",
+    "name": "Pote Térmico Descartável de Isopor 360ml",
+    "category": "Descartáveis",
+    "price": 21.25,
+    "presentation": "25 unidades",
     "image": "",
     "description": ""
   },
   {
     "id": "tampa-pote-mr-200-mr-300ml",
-    "name": "Tampa para Pote MR 200/MR 300ml",
+    "name": "Tampa Isopor P – Pote MR 200 e MR 300ml",
     "category": "Descartáveis",
-    "price": "",
-    "image": "",
+    "price": 18.50,
+    "presentation": "50 unidades",
+    "image": "images/Tampa para Pote MR 200 MR 300ml.webp",
+    "description": ""
+  },
+  {
+    "id": "pote-termico-mr-300ml-sem-tampa",
+    "name": "Pote Térmico Descartável de Isopor 300ml",
+    "category": "Descartáveis",
+    "price": 20.00,
+    "presentation": "50 unidades",
+    "image": "images/Pote Térmico Descartável MR 300ml sem tampa.webp",
     "description": ""
   },
   {
     "id": "pote-termico-mr-500ml",
-    "name": "Pote Térmico Descartável MR 500ml",
+    "name": "Pote Térmico Descartável de Isopor 500ml",
     "category": "Descartáveis",
-    "price": "",
-    "image": "",
+    "price": 33.50,
+    "presentation": "50 unidades",
+    "image": "images/Pote Térmico Descartável MR 500ml.webp",
     "description": ""
   },
   {
     "id": "tampa-pote-mr-500ml",
-    "name": "Tampa para Pote MR 500ml",
+    "name": "Tampa Isopor P – Pote MR 500ml",
     "category": "Descartáveis",
-    "price": "",
-    "image": "",
+    "price": 23.13,
+    "presentation": "50 unidades",
+    "image": "images/Tampa para Pote MR 500ml.webp",
     "description": ""
   },
   {
-    "id": "lacre-seguranca-delivery-acai",
-    "name": "Lacre de Segurança para Delivery Açaí",
-    "category": "Acessórios",
-    "price": "",
-    "image": "images/Lacre de Segurança para Delivery Açaí.png",
+    "id": "sacola-plastica-verde-38x50cm-biodegradavel",
+    "name": "Sacola Plástica Verde 38x50cm Biodegradável",
+    "category": "Ecológicos",
+    "price": 60.21,
+    "presentation": "500 unidades",
+    "image": "images/Sacola Plastica Verde Biodegradavel.webp",
     "description": ""
   },
   {
-    "id": "lacre-seguranca-delivery-hamburguer",
-    "name": "Lacre de Segurança para Delivery Hambúrguer",
-    "category": "Acessórios",
-    "price": "",
-    "image": "images/Lacre de Segurança para Delivery Hambúrguer.png",
-    "description": ""
-  },
-  {
-    "id": "lacre-seguranca-delivery-simples",
-    "name": "Lacre de Segurança para Delivery Simples",
-    "category": "Acessórios",
-    "price": "",
-    "image": "images/Lacre de Segurança para Delivery Açaí.png",
-    "description": ""
-  },
-  {
-    "id": "papel-aluminio-inoven-30cm-100m",
-    "name": "Papel Alumínio Inoven 30cm 100m",
-    "category": "Acessórios",
-    "price": "",
-    "image": "",
-    "description": ""
-  },
-  {
-    "id": "papel-manteiga-29x50m",
-    "name": "Papel Manteiga 29x50m",
-    "category": "Acessórios",
-    "price": "",
-    "image": "",
-    "description": ""
-  },
-  {
-    "id": "hamburgueira-de-isopor",
-    "name": "Hamburgueira de Isopor",
+    "id": "sacola-plastica-branca-30x40cm",
+    "name": "Sacola Plástica Branca 30x40cm",
     "category": "Delivery",
-    "price": "",
+    "price": 57.08,
+    "presentation": "500 unidades",
     "image": "",
     "description": ""
   },
   {
-    "id": "garfo-descartavel-extra-forte-branco-plastla",
-    "name": "Garfo Descartável Extra Forte Branco Plastla",
-    "category": "Descartáveis",
-    "price": "",
-    "image": "",
-    "description": ""
-  },
-  {
-    "id": "colher-descartavel-extra-forte-branca-plastlab",
-    "name": "Colher Descartável Extra Forte Branca Plastlab",
-    "category": "Descartáveis",
-    "price": "",
-    "image": "",
-    "description": ""
-  },
-  {
-    "id": "saco-hamburguer-kraft",
-    "name": "Saco de Hambúrguer Kraft",
+    "id": "sacola-plastica-branca-38x48cm",
+    "name": "Sacola Plástica Branca 38x48cm",
     "category": "Delivery",
-    "price": "",
+    "price": 72.76,
+    "presentation": "500 unidades",
     "image": "",
+    "description": ""
+  },
+  {
+    "id": "saco-artesanal-hamburguer-preto-laranja",
+    "name": "Saco Artesanal para Hambúrguer Preto e Laranja",
+    "category": "Delivery",
+    "price": 40.00,
+    "presentation": "50 unidades",
+    "image": "images/Sacola Artesanal de Hambúrguer em Preto e Laranja.png",
     "description": ""
   },
   {
     "id": "saco-termico-espetinho-delivery",
     "name": "Saco Térmico para Espetinho Delivery",
     "category": "Delivery",
-    "price": "",
-    "image": "",
+    "price": 35.00,
+    "presentation": "50 unidades",
+    "image": "images/Saco Térmico para Espetinho Delivery.png",
     "description": ""
   },
   {
-    "id": "saco-pastel-simples",
-    "name": "Saco para Pastel Simples",
+    "id": "saco-papel-mono-hamburguer-pastel",
+    "name": "Saco de Papel Mono para Hambúrguer e Pastel",
     "category": "Delivery",
-    "price": "",
-    "image": "",
+    "price": 50.00,
+    "presentation": "500 unidades",
+    "image": "images/Saco papel mono hamburguer.jpg",
+    "description": ""
+  },
+  {
+    "id": "lacre-seguranca-delivery-acai",
+    "name": "Lacre de Segurança para Delivery – Açaí",
+    "category": "Acessórios",
+    "price": 25.00,
+    "presentation": "1 unidade/rolo",
+    "image": "images/Lacre de Segurança para Delivery Açaí.png",
+    "description": ""
+  },
+  {
+    "id": "lacre-seguranca-delivery-hamburguer",
+    "name": "Lacre de Segurança para Delivery – Hambúrguer",
+    "category": "Acessórios",
+    "price": 25.00,
+    "presentation": "1 unidade/rolo",
+    "image": "images/Lacre de Segurança para Delivery Hambúrguer.png",
+    "description": ""
+  },
+  {
+    "id": "pote-molho-30ml-p-695-preto",
+    "name": "Pote para Molho 30ml Preto",
+    "category": "Descartáveis",
+    "price": 36.73,
+    "presentation": "100 unidades",
+    "image": "images/Pote para Molho 30ml P-695 Preto.webp",
+    "description": ""
+  },
+  {
+    "id": "pote-molho-30ml-p-695-branco",
+    "name": "Pote para Molho 30ml Branco",
+    "category": "Descartáveis",
+    "price": 32.16,
+    "presentation": "100 unidades",
+    "image": "images/Pote para Molho 30ml P-695 Branco.png",
+    "description": ""
+  },
+  {
+    "id": "papel-manteiga-29x50m",
+    "name": "Papel Manteiga 29x50m",
+    "category": "Acessórios",
+    "price": 40.00,
+    "presentation": "1 unidade",
+    "image": "images/Papel Manteiga 29x50m.webp",
+    "description": ""
+  },
+  {
+    "id": "papel-aluminio-inoven-30cm-100m",
+    "name": "Papel Alumínio Inoven 30cmx100m",
+    "category": "Acessórios",
+    "price": 68.95,
+    "presentation": "1 unidade",
+    "image": "images/Papel Alumínio Inoven 30cm 100m.webp",
+    "description": ""
+  },
+  {
+    "id": "hamburgueira-de-isopor",
+    "name": "Hamburgueris OPO",
+    "category": "Delivery",
+    "price": 116.00,
+    "presentation": "400 unidades",
+    "image": "images/Hamburgueira de Isopor.webp",
     "description": ""
   }
 ]
