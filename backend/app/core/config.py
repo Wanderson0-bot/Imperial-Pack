@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     initial_admin_email: str | None = None
     cookie_samesite: Literal['lax', 'none'] = 'lax'
     cookie_secure: bool | None = None
-    frontend_origins: str = 'http://localhost:5173'
+    frontend_origins: str = 'http://localhost:5173,https://imperial-pack.vercel.app'
 
     @model_validator(mode='after')
     def validate_cookie_settings(self):
@@ -47,7 +47,11 @@ class Settings(BaseSettings):
 
     @property
     def cors_origins(self) -> list[str]:
-        return [value.strip() for value in self.frontend_origins.split(',') if value.strip()]
+        configured = [value.strip().rstrip('/') for value in self.frontend_origins.split(',') if value.strip()]
+        # Keep the deployed storefront trusted even when Render still has an older
+        # FRONTEND_ORIGINS value configured; additional trusted deployments remain env-driven.
+        required = ['https://imperial-pack.vercel.app']
+        return list(dict.fromkeys([*configured, *required]))
 
 
 @lru_cache

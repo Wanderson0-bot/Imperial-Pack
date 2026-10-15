@@ -13,7 +13,7 @@ The repository root remains the Vite frontend. This backend uses FastAPI, SQLAlc
 
 Google OAuth is enabled only when client ID, secret, redirect URI, and the explicit authorized-email allowlist are configured. OAuth never creates an account automatically.
 
-For an HTTPS frontend and API on different sites, set `COOKIE_SAMESITE=none` and `COOKIE_SECURE=true`; keep `FRONTEND_ORIGINS` limited to the exact trusted frontend origins. Same-site/local development can use `COOKIE_SAMESITE=lax` and `COOKIE_SECURE=false`. `/health` reports `database_connected` after executing `SELECT 1`. Alembic requires `DATABASE_URL` and does not fall back to localhost.
+For the deployed Vercel frontend (`https://imperial-pack.vercel.app`) and Render API, CORS allows that exact origin plus the origins listed in `FRONTEND_ORIGINS`. For other HTTPS frontend and API deployments, set `COOKIE_SAMESITE=none` and `COOKIE_SECURE=true`; keep `FRONTEND_ORIGINS` limited to exact trusted frontend origins. Same-site/local development can use `COOKIE_SAMESITE=lax` and `COOKIE_SECURE=false`. `/health` reports `database_connected` after executing `SELECT 1`. Alembic requires `DATABASE_URL` and does not fall back to localhost.
 
 Production settings require a `SECRET_KEY` of at least 32 UTF-8 bytes and secure cookies. The API is not production-ready until deployment secrets, PostgreSQL, HTTPS, backup policy, and the authorized email allowlist are configured and reviewed.
 
