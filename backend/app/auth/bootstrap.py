@@ -19,6 +19,7 @@ PERMISSIONS = {
     'finance:read': 'View financial records', 'finance:write': 'Manage financial records',
 'opportunities:manage': 'Update operational opportunities',
     'intelligence:read': 'View intelligence status', 'intelligence:train': 'Train and activate validated intelligence models', 'reports:read': 'View reports',
+    'planning:manage': 'Create and manage company planning',
 }
 
 

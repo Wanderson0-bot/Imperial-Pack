@@ -1,4 +1,4 @@
-export type InternalPermission = 'manage_users' | 'manage_catalog' | 'manage_purchases' | 'manage_pricing' | 'manage_inventory' | 'view_reports' | 'train_intelligence';
+export type InternalPermission = 'manage_users' | 'manage_catalog' | 'manage_purchases' | 'manage_pricing' | 'manage_inventory' | 'manage_planning' | 'view_reports' | 'train_intelligence';
 
 export type InternalUser = {
   id: string;

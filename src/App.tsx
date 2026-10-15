@@ -16,6 +16,7 @@ import { SettingsPage } from './pages/SettingsPage';
 import { UsersPage } from './pages/UsersPage';
 import { AccessPage } from './pages/AccessPage';
 import { OperationalSignalsPage } from './pages/OperationalSignalsPage';
+import { PlanningPage } from './pages/PlanningPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
         <Route path="/relatorios" element={<ReportsPage />} />
         <Route path="/configuracoes" element={<SettingsPage />} />
         <Route path="/usuarios" element={<UsersPage />} />
+        <Route path="/planejar" element={<PlanningPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
       </Route>

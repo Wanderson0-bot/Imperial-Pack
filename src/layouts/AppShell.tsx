@@ -16,6 +16,7 @@ const pageContext: Record<string, { label: string; breadcrumb: string }> = {
   '/relatorios': { label: 'Relat\u00f3rios', breadcrumb: 'Intelig\u00eancia / Relat\u00f3rios' },
   '/configuracoes': { label: 'Configura\u00e7\u00f5es', breadcrumb: 'Administra\u00e7\u00e3o / Configura\u00e7\u00f5es' },
   '/usuarios': { label: 'Usu\u00e1rios', breadcrumb: 'Administra\u00e7\u00e3o / Usu\u00e1rios' },
+  '/planejar': { label: 'Planejar', breadcrumb: 'Administra\u00e7\u00e3o / Planejar' },
 };
 
 export function AppShell() {

@@ -17,7 +17,7 @@ MIGRATION_SPEC.loader.exec_module(ADDRESS_MIGRATION)
 def test_optional_address_migration_merges_existing_alembic_heads():
     config = Config()
     config.set_main_option('script_location', str(Path(__file__).parents[1] / 'migrations'))
-    assert ScriptDirectory.from_config(config).get_heads() == ['0008_intelligence_training_permission']
+    assert ScriptDirectory.from_config(config).get_heads() == ['0010_planning_workspace']
 
 
 def test_address_migration_relaxes_required_fields_and_preserves_existing_data():

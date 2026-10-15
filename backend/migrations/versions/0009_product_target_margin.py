@@ -9,8 +9,12 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column('products', sa.Column('target_margin_percent', sa.Numeric(8, 4), nullable=False, server_default='30'))
+    columns = {column['name'] for column in sa.inspect(op.get_bind()).get_columns('products')}
+    if 'target_margin_percent' not in columns:
+        op.add_column('products', sa.Column('target_margin_percent', sa.Numeric(8, 4), nullable=False, server_default='30'))
 
 
 def downgrade():
-    op.drop_column('products', 'target_margin_percent')
+    columns = {column['name'] for column in sa.inspect(op.get_bind()).get_columns('products')}
+    if 'target_margin_percent' in columns:
+        op.drop_column('products', 'target_margin_percent')

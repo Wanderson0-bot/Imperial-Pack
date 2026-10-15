@@ -23,6 +23,7 @@ from app.intelligence.router import router as intelligence_router
 from app.reports.router import router as reports_router
 from app.finance.router import router as finance_router
 from app.alerts.router import router as alerts_router
+from app.planning.router import router as planning_router
 
 settings = get_settings()
 app = FastAPI(title='Sistema Imperial Pack', version='0.1.0')
@@ -55,7 +56,7 @@ async def localized_validation_exception_handler(request: Request, error: Reques
     )
 
 
-for router in (auth_router, users_router, customers_router, products_router, suppliers_router, purchases_router, orders_router, inventory_router, pricing_router, partners_router, intelligence_router, finance_router, reports_router, alerts_router):
+for router in (auth_router, users_router, customers_router, products_router, suppliers_router, purchases_router, orders_router, inventory_router, pricing_router, partners_router, intelligence_router, finance_router, reports_router, alerts_router, planning_router):
     app.include_router(router, prefix=settings.api_prefix)
 
 

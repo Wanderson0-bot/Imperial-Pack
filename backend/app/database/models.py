@@ -1,8 +1,8 @@
 from __future__ import annotations
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from decimal import Decimal
 from uuid import uuid4
-from sqlalchemy import Boolean, CheckConstraint, DateTime, ForeignKey, Index, Integer, Numeric, String, Text, JSON, func
+from sqlalchemy import Boolean, CheckConstraint, Date, DateTime, ForeignKey, Index, Integer, Numeric, String, Text, JSON, func
 from sqlalchemy.orm import Mapped, mapped_column
 from app.database.base import Base
 
@@ -427,6 +427,81 @@ class CashMovement(Base, Timestamped):
     receivable_id: Mapped[str | None] = mapped_column(ForeignKey('accounts_receivable.id', ondelete='SET NULL'))
     settlement_key: Mapped[str | None] = mapped_column(String(180))
     __table_args__ = (CheckConstraint('amount >= 0', name='cash_movement_amount_nonnegative'),)
+
+
+class Planning(Base, Timestamped):
+    __tablename__ = 'plannings'
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    title: Mapped[str] = mapped_column(String(180), nullable=False)
+    description: Mapped[str | None] = mapped_column(Text)
+    category: Mapped[str] = mapped_column(String(30), nullable=False)
+    expected_outcome: Mapped[str | None] = mapped_column(Text)
+    start_date: Mapped[date | None] = mapped_column(Date)
+    due_date: Mapped[date | None] = mapped_column(Date, index=True)
+    status: Mapped[str] = mapped_column(String(20), default='not_started', nullable=False, index=True)
+    priority: Mapped[str] = mapped_column(String(12), default='medium', nullable=False, index=True)
+    observations: Mapped[str | None] = mapped_column(Text)
+    archived_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), index=True)
+    created_by: Mapped[str | None] = mapped_column(ForeignKey('users.id', ondelete='SET NULL'))
+
+
+class PlanningTask(Base, Timestamped):
+    __tablename__ = 'planning_tasks'
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    planning_id: Mapped[str] = mapped_column(ForeignKey('plannings.id', ondelete='CASCADE'), nullable=False, index=True)
+    title: Mapped[str] = mapped_column(String(180), nullable=False)
+    description: Mapped[str | None] = mapped_column(Text)
+    stage: Mapped[str | None] = mapped_column(String(80))
+    status: Mapped[str] = mapped_column(String(16), default='pending', nullable=False, index=True)
+    priority: Mapped[str] = mapped_column(String(12), default='medium', nullable=False)
+    due_date: Mapped[date | None] = mapped_column(Date, index=True)
+    assignee_id: Mapped[str | None] = mapped_column(ForeignKey('users.id', ondelete='SET NULL'))
+    sort_order: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    observations: Mapped[str | None] = mapped_column(Text)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class PlanningGoal(Base, Timestamped):
+    __tablename__ = 'planning_goals'
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    planning_id: Mapped[str | None] = mapped_column(ForeignKey('plannings.id', ondelete='SET NULL'), index=True)
+    name: Mapped[str] = mapped_column(String(180), nullable=False)
+    description: Mapped[str | None] = mapped_column(Text)
+    category: Mapped[str] = mapped_column(String(30), nullable=False)
+    initial_value: Mapped[Decimal | None] = mapped_column(Numeric(16, 4))
+    target_value: Mapped[Decimal] = mapped_column(Numeric(16, 4), nullable=False)
+    current_value: Mapped[Decimal] = mapped_column(Numeric(16, 4), default=0, nullable=False)
+    unit: Mapped[str] = mapped_column(String(40), nullable=False)
+    start_date: Mapped[date | None] = mapped_column(Date)
+    due_date: Mapped[date | None] = mapped_column(Date, index=True)
+    status: Mapped[str] = mapped_column(String(16), default='in_progress', nullable=False, index=True)
+
+
+class PlanningEntityLink(Base):
+    __tablename__ = 'planning_entity_links'
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    planning_id: Mapped[str] = mapped_column(ForeignKey('plannings.id', ondelete='CASCADE'), nullable=False, index=True)
+    customer_id: Mapped[str | None] = mapped_column(ForeignKey('customers.id', ondelete='CASCADE'))
+    supplier_id: Mapped[str | None] = mapped_column(ForeignKey('suppliers.id', ondelete='CASCADE'))
+    product_id: Mapped[str | None] = mapped_column(ForeignKey('products.id', ondelete='CASCADE'))
+    purchase_id: Mapped[str | None] = mapped_column(ForeignKey('purchases.id', ondelete='CASCADE'))
+    order_id: Mapped[str | None] = mapped_column(ForeignKey('orders.id', ondelete='CASCADE'))
+    payable_id: Mapped[str | None] = mapped_column(ForeignKey('accounts_payable.id', ondelete='CASCADE'))
+    receivable_id: Mapped[str | None] = mapped_column(ForeignKey('accounts_receivable.id', ondelete='CASCADE'))
+    __table_args__ = (CheckConstraint("(CASE WHEN customer_id IS NOT NULL THEN 1 ELSE 0 END + CASE WHEN supplier_id IS NOT NULL THEN 1 ELSE 0 END + CASE WHEN product_id IS NOT NULL THEN 1 ELSE 0 END + CASE WHEN purchase_id IS NOT NULL THEN 1 ELSE 0 END + CASE WHEN order_id IS NOT NULL THEN 1 ELSE 0 END + CASE WHEN payable_id IS NOT NULL THEN 1 ELSE 0 END + CASE WHEN receivable_id IS NOT NULL THEN 1 ELSE 0 END) = 1", name='planning_link_one_entity'),)
+
+
+class PlanningOpportunityDismissal(Base):
+    __tablename__ = 'planning_opportunity_dismissals'
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    opportunity_key: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
+    product_id: Mapped[str | None] = mapped_column(ForeignKey('products.id', ondelete='CASCADE'))
+    dismissed_by: Mapped[str | None] = mapped_column(ForeignKey('users.id', ondelete='SET NULL'))
+    dismissed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc, nullable=False)
+
+
+Index('ix_plannings_status_due', Planning.status, Planning.due_date)
+Index('ix_planning_tasks_parent_order', PlanningTask.planning_id, PlanningTask.sort_order)
 
 
 Index('ix_orders_customer_date', Order.customer_id, Order.ordered_at)

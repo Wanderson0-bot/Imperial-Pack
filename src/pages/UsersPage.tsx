@@ -5,7 +5,7 @@ import { authService } from '../services/authService';
 import type { InternalUser } from '../types/auth';
 
 const permissionGroups = [
-  { title: 'Administração', items: [['users:read', 'Visualizar usuários'], ['users:create', 'Criar contas'], ['users:manage', 'Gerenciar contas'], ['users:manage_roles', 'Gerenciar funções']] },
+  { title: 'Administração', items: [['users:read', 'Visualizar usuários'], ['users:create', 'Criar contas'], ['users:manage', 'Gerenciar contas'], ['users:manage_roles', 'Gerenciar funções'], ['planning:manage', 'Planejar atividades e metas']] },
   { title: 'Clientes e fornecedores', items: [['customers:read', 'Visualizar clientes'], ['customers:create', 'Criar clientes'], ['customers:update', 'Editar clientes'], ['suppliers:read', 'Visualizar fornecedores'], ['suppliers:manage', 'Gerenciar fornecedores']] },
   { title: 'Produtos e compras', items: [['products:read', 'Visualizar produtos'], ['products:create', 'Criar produtos'], ['products:update', 'Editar produtos'], ['purchases:read', 'Visualizar compras'], ['purchases:create', 'Registrar compras'], ['purchases:cancel', 'Cancelar compras']] },
   { title: 'Vendas e estoque', items: [['orders:read', 'Visualizar pedidos'], ['orders:create', 'Criar pedidos'], ['orders:update_status', 'Finalizar e cancelar pedidos'], ['inventory:read', 'Visualizar estoque'], ['inventory:adjust', 'Ajustar estoque']] },

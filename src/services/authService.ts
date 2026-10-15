@@ -10,6 +10,7 @@ const mapPermission = (key: string): InternalPermission | undefined => key.start
   : key.startsWith('purchases:') ? 'manage_purchases'
   : key.startsWith('pricing:') ? 'manage_pricing'
   : key.startsWith('inventory:') ? 'manage_inventory'
+  : key.startsWith('planning:') ? 'manage_planning'
   : key === 'intelligence:train' ? 'train_intelligence'
   : key === 'reports:read' ? 'view_reports' : undefined;
 
