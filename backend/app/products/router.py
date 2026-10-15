@@ -7,7 +7,7 @@ from app.core.audit import audit
 from app.database.models import InventoryBalance, Product, ProductCategory, User
 from app.database.session import get_db
 from app.products.schemas import CategoryInput, ProductCreate, ProductRecord, ProductUpdate
-from app.pricing.calculations import margin, markup, minimum_price, maximum_price
+from app.pricing.calculations import margin, markup, maximum_price
 
 router = APIRouter(prefix='/products', tags=['products'])
 
@@ -78,6 +78,8 @@ def list_products(_: User = Depends(require_permission('products:read')), db: Se
 def create_product(payload: ProductCreate, actor: User = Depends(require_permission('products:create')), db: Session = Depends(get_db)):
     if payload.category_id and not db.get(ProductCategory, payload.category_id):
         raise HTTPException(status_code=422, detail='Unknown product category.')
+    if payload.current_cost and payload.current_price > maximum_price(payload.current_cost):
+        raise HTTPException(status_code=422, detail='Price exceeds the configured maximum markup.')
     product = Product(**payload.model_dump(), margin_percent=margin(payload.current_price, payload.current_cost), markup_percent=markup(payload.current_price, payload.current_cost))
     db.add(product)
     db.flush()
@@ -104,8 +106,8 @@ def update_product(product_id: str, payload: ProductUpdate, actor: User = Depend
     if 'current_price' in changes and changes['current_price'] != previous_price:
         if not actor.is_general_admin and 'pricing:approve' not in user_permission_keys(db, actor):
             raise HTTPException(status_code=403, detail='Pricing approval permission is required to change a product price.')
-        if product.current_price < minimum_price(product.current_cost) or product.current_price > maximum_price(product.current_cost):
-            raise HTTPException(status_code=422, detail='Price violates configured margin or markup limits.')
+        if product.current_price > maximum_price(product.current_cost):
+            raise HTTPException(status_code=422, detail='Price exceeds the configured maximum markup.')
         from app.database.models import PricingHistory
         db.add(PricingHistory(product_id=product.id, previous_price=previous_price, new_price=product.current_price, cost_snapshot=product.current_cost, margin_percent=product.margin_percent, markup_percent=product.markup_percent, source='MANUAL_EDIT', changed_by=actor.id))
         audit(db, actor.id, 'pricing.manual_update', 'product', product.id, {'previous_price': str(previous_price), 'new_price': str(product.current_price)})

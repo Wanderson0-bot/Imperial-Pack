@@ -1,6 +1,9 @@
 from decimal import Decimal
 from pydantic import BaseModel, Field
 
+MIN_TARGET_MARGIN_PERCENT = Decimal('-9999.9999')
+MAX_TARGET_MARGIN_PERCENT = Decimal('50')
+
 
 class ProductCreate(BaseModel):
     name: str = Field(min_length=2, max_length=180)
@@ -10,7 +13,7 @@ class ProductCreate(BaseModel):
     unit: str = Field(min_length=1, max_length=30)
     current_cost: Decimal = Field(ge=0)
     current_price: Decimal = Field(ge=0)
-    target_margin_percent: Decimal = Field(default=Decimal('30'), ge=20, le=50)
+    target_margin_percent: Decimal = Field(default=Decimal('30'), ge=MIN_TARGET_MARGIN_PERCENT, le=MAX_TARGET_MARGIN_PERCENT)
     minimum_stock: Decimal = Field(ge=0)
 
 
@@ -29,7 +32,7 @@ class ProductUpdate(BaseModel):
     description: str | None = None
     unit: str | None = None
     current_price: Decimal | None = Field(default=None, ge=0)
-    target_margin_percent: Decimal | None = Field(default=None, ge=20, le=50)
+    target_margin_percent: Decimal | None = Field(default=None, ge=MIN_TARGET_MARGIN_PERCENT, le=MAX_TARGET_MARGIN_PERCENT)
     minimum_stock: Decimal | None = Field(default=None, ge=0)
     is_active: bool | None = None
 

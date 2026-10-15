@@ -1,6 +1,5 @@
 from decimal import Decimal, ROUND_HALF_UP
 
-MIN_MARGIN = Decimal('0.20')
 STANDARD_MARGIN = Decimal('0.30')
 MAX_MARKUP = Decimal('1.00')
 ROUNDING_STEP = Decimal('0.05')
@@ -23,7 +22,7 @@ def suggested_price(cost: Decimal) -> Decimal:
 
 
 def minimum_price(cost: Decimal) -> Decimal:
-    return cost / (1 - MIN_MARGIN) if cost else Decimal('0')
+    return Decimal('0')
 
 
 def maximum_price(cost: Decimal) -> Decimal:

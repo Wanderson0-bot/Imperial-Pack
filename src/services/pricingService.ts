@@ -14,12 +14,12 @@ const mapReviewRow = (row: PricingReviewDto): PricingReviewRow => {
   const recommendedPrice = Number(row.suggested_price);
   const minimumPrice = Number(row.minimum_price);
   const maximumPrice = Number(row.maximum_price);
-  const isBelowMinimumMargin = currentMargin < pricingConfiguration.minimumMargin * 100;
+  const hasNegativeMargin = currentMargin < 0;
   const isAboveMaximumMarkup = currentMarkup > pricingConfiguration.maximumMarkup * 100;
   const situation = currentPrice <= 0
     ? 'Sem preço'
-    : isBelowMinimumMargin
-      ? 'Abaixo da margem mínima'
+    : hasNegativeMargin
+      ? 'Margem negativa'
       : isAboveMaximumMarkup
         ? 'Acima do markup máximo'
         : Math.abs(currentPrice - recommendedPrice) < 0.01
@@ -104,12 +104,13 @@ export const pricingService = {
   },
 
   getRecommendedPrice: async (product: Product): Promise<number> => {
-    const targetMargin = Math.min(0.5, Math.max(pricingConfiguration.minimumMargin, product.targetMargin / 100));
-    return pricingService.roundCommercialPrice(product.cost / (1 - targetMargin));
+    const targetMargin = Math.min(0.5, product.targetMargin / 100);
+    const roundedPrice = pricingService.roundCommercialPrice(product.cost / (1 - targetMargin));
+    return Math.min(roundedPrice, product.cost * (1 + pricingConfiguration.maximumMarkup));
   },
 
   getPriceRanges: async (product: Product): Promise<{ minimumPrice: number; recommendedPrice: number; maximumPrice: number }> => {
-    const minimumPrice = product.cost / (1 - pricingConfiguration.minimumMargin);
+    const minimumPrice = 0;
     const recommendedPrice = await pricingService.getRecommendedPrice(product);
     const maximumPrice = product.cost * (1 + pricingConfiguration.maximumMarkup);
 

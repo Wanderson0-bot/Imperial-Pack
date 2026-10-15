@@ -133,7 +133,7 @@ def test_templates_create_independent_plan_tasks(planning_client):
 
 def test_low_stock_opportunity_uses_persisted_inventory_and_can_be_dismissed(planning_client):
     client, _ = planning_client
-    product = client.post('/api/products', json={'name': 'Produto para oportunidade', 'category_id': None, 'unit': 'un', 'current_cost': 2, 'current_price': 5, 'minimum_stock': 4})
+    product = client.post('/api/products', json={'name': 'Produto para oportunidade', 'category_id': None, 'unit': 'un', 'current_cost': 2, 'current_price': 4, 'minimum_stock': 4})
     assert product.status_code == 201, product.text
     assert client.get('/api/products').status_code == 200
     product_id = product.json()['id']
@@ -153,4 +153,3 @@ def test_planning_role_without_permission_is_forbidden(planning_client):
     client.post('/api/auth/logout')
     assert client.post('/api/auth/login', json={'email': 'planning-viewer@example.com', 'password': 'long-enough-password'}).status_code == 200
     assert client.get('/api/planning').status_code == 403
-

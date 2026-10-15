@@ -107,3 +107,7 @@ finally {
 ```
 
 Se for necessário autenticar o PostgreSQL local com senha, obtenha-a por prompt seguro e monte a URL no processo atual sem a imprimir, escapando usuário e senha como componentes de URL. Não passe credenciais em argumentos de linha de comando, não as inclua em arquivos versionados e não use URLs de produção. `TEST_POSTGRES_URL` deve apontar exclusivamente para um PostgreSQL local descartável com banco terminado em `_test`. O teste compila o cast para `VARCHAR(36)` e exercita a execução real no PostgreSQL; o teste SQLite, sozinho, não comprova essa compatibilidade.
+
+## Regras de margem e aprovação de preços
+
+A margem-alvo é configurável por produto, com valor inicial de 30%; o cadastro aceita alvos negativos (até o limite representável pelo `NUMERIC(8,4)`) para permitir recomendações abaixo do custo. Não há piso de margem de 20%: preços positivos abaixo do custo podem ser aprovados e ficam identificados como margem negativa. O limite superior de aprovação permanece markup de 100% (preço de até duas vezes o custo, equivalente a margem bruta de 50%). O preço recomendado usa a margem-alvo do produto e respeita esse teto; a margem atual é calculada a partir do preço e custo reais.

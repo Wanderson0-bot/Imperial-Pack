@@ -29,8 +29,6 @@ _API_MESSAGES = {
     'Replacement category not found.': 'Categoria substituta não encontrada.',
     'Unknown product category.': 'Categoria de produto desconhecida.',
     'Pricing approval permission is required to change a product price.': 'É necessária a permissão de aprovação de preços para alterar o preço de um produto.',
-    'Price violates configured margin or markup limits.': 'O preço não respeita os limites configurados de margem ou acréscimo sobre o custo.',
-    'Price is below the configured minimum margin.': 'O preço está abaixo da margem mínima configurada.',
     'Price exceeds the configured maximum markup.': 'O preço excede o acréscimo máximo sobre o custo configurado.',
     'Active customer not found.': 'Cliente ativo não encontrado.',
     'Customer is already an active partner.': 'Este cliente já é um parceiro ativo.',

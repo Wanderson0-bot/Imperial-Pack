@@ -15,9 +15,10 @@ export function SettingsPage() {
         <section className="settings-grid">
           <div className="panel">
             <div className="panel__header"><h3>Precificação</h3></div>
-            <div className="field"><label>Margem mínima</label><input value="20%" readOnly /></div>
-            <div className="field"><label>Margem padrão</label><input value="30%" readOnly /></div>
-            <div className="field"><label>Markup máximo</label><input value="100%" readOnly /></div>
+            <div className="field"><label>Margem-alvo por produto</label><input value="Configurável no cadastro (−9999,9999% a 50%)" readOnly /></div>
+            <div className="field"><label>Valor inicial da margem-alvo</label><input value="30% (editável)" readOnly /></div>
+            <div className="field"><label>Markup máximo na aprovação</label><input value="100% (margem de até 50%)" readOnly /></div>
+            <div className="field"><label>Preço abaixo do custo</label><input value="Permitido com aprovação" readOnly /></div>
             <div className="field"><label>Arredondamento</label><input value="R$ 0,50" readOnly /></div>
           </div>
 

@@ -12,15 +12,13 @@ from app.pricing.schemas import PriceApproval, PricingReview
 router = APIRouter(prefix='/pricing', tags=['pricing'])
 def review(product: Product) -> PricingReview:
     target_margin = product.target_margin_percent / Decimal('100')
-    suggested = commercial_round(product.current_cost / (1 - target_margin)) if product.current_cost else Decimal('0')
     minimum = minimum_price(product.current_cost)
     maximum = maximum_price(product.current_cost)
+    suggested = min(commercial_round(product.current_cost / (1 - target_margin)), maximum) if product.current_cost else Decimal('0')
     return PricingReview(product_id=product.id, product_name=product.name, cost=product.current_cost, current_price=product.current_price, suggested_price=suggested, minimum_price=minimum.quantize(Decimal('0.01')), maximum_price=maximum.quantize(Decimal('0.01')), margin_percent=margin(product.current_price, product.current_cost), markup_percent=markup(product.current_price, product.current_cost))
 
 
 def approve(product: Product, value: Decimal, actor: User, db: Session, source: str):
-    if value < minimum_price(product.current_cost):
-        raise HTTPException(status_code=422, detail='Price is below the configured minimum margin.')
     if value > maximum_price(product.current_cost):
         raise HTTPException(status_code=422, detail='Price exceeds the configured maximum markup.')
     previous = product.current_price
