@@ -51,8 +51,14 @@ def create_plan(client, **overrides):
 def test_planning_requires_authentication_and_permission(planning_client):
     client, _ = planning_client
     assert client.get('/api/planning').status_code == 200
+    cors_success = client.get('/api/planning/goals', headers={'Origin': 'https://imperial-pack.vercel.app'})
+    assert cors_success.status_code == 200
+    assert cors_success.headers['access-control-allow-origin'] == 'https://imperial-pack.vercel.app'
+    assert cors_success.headers['access-control-allow-credentials'] == 'true'
     client.post('/api/auth/logout')
-    assert client.get('/api/planning').status_code == 401
+    unauthenticated = client.get('/api/planning', headers={'Origin': 'https://imperial-pack.vercel.app'})
+    assert unauthenticated.status_code == 401
+    assert unauthenticated.headers['access-control-allow-origin'] == 'https://imperial-pack.vercel.app'
 
 
 def test_create_update_complete_plan_and_task_progress(planning_client):
@@ -129,6 +135,7 @@ def test_low_stock_opportunity_uses_persisted_inventory_and_can_be_dismissed(pla
     client, _ = planning_client
     product = client.post('/api/products', json={'name': 'Produto para oportunidade', 'category_id': None, 'unit': 'un', 'current_cost': 2, 'current_price': 5, 'minimum_stock': 4})
     assert product.status_code == 201, product.text
+    assert client.get('/api/products').status_code == 200
     product_id = product.json()['id']
     suggestions = client.get('/api/planning/opportunities').json()
     suggestion = next(item for item in suggestions if item['entity_id'] == product_id)

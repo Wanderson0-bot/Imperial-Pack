@@ -15,6 +15,34 @@ def _create_index_if_missing(name: str, table_name: str, columns: list[str]):
         op.create_index(name, table_name, columns)
 
 
+def _permission_grant_statement(role_id_type, role_name_type, association_role_id_type, association_permission_id_type):
+    roles = sa.table(
+        'roles',
+        sa.column('id', role_id_type),
+        sa.column('name', role_name_type),
+    )
+    role_permissions = sa.table(
+        'role_permissions',
+        sa.column('role_id', association_role_id_type),
+        sa.column('permission_id', association_permission_id_type),
+    )
+    permission_id_bind = sa.bindparam('permission_id', type_=association_permission_id_type)
+    typed_permission_id = sa.cast(permission_id_bind, association_permission_id_type)
+    return sa.insert(role_permissions).from_select(
+        ['role_id', 'permission_id'],
+        sa.select(roles.c.id, typed_permission_id)
+        .where(roles.c.name == 'general_admin')
+        .where(~sa.exists(
+            sa.select(1)
+            .select_from(role_permissions)
+            .where(
+                role_permissions.c.role_id == roles.c.id,
+                role_permissions.c.permission_id == typed_permission_id,
+            )
+        )),
+    )
+
+
 def upgrade():
     if not sa.inspect(op.get_bind()).has_table('plannings'):
         op.create_table(
@@ -118,7 +146,16 @@ def upgrade():
         bind.execute(sa.text('INSERT INTO permissions (id, key, description) VALUES (:id, :key, :description)'), {
             'id': permission, 'key': 'planning:manage', 'description': 'Create and manage company planning',
         })
-    bind.execute(sa.text("INSERT INTO role_permissions (role_id, permission_id) SELECT id, :permission_id FROM roles WHERE name = 'general_admin' AND NOT EXISTS (SELECT 1 FROM role_permissions WHERE role_id = roles.id AND permission_id = :permission_id)"), {'permission_id': permission})
+    inspector = sa.inspect(bind)
+    role_columns = {column['name']: column['type'] for column in inspector.get_columns('roles')}
+    role_permission_columns = {column['name']: column['type'] for column in inspector.get_columns('role_permissions')}
+    permission_grant = _permission_grant_statement(
+        role_columns['id'],
+        role_columns['name'],
+        role_permission_columns['role_id'],
+        role_permission_columns['permission_id'],
+    )
+    bind.execute(permission_grant, {'permission_id': permission})
 
 
 def downgrade():
