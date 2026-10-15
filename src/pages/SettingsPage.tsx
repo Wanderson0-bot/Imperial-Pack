@@ -24,7 +24,6 @@ export function SettingsPage() {
           <div className="panel">
             <div className="panel__header"><h3>Estoque</h3></div>
             <div className="field"><label>Estoque mínimo</label><input value="15" readOnly /></div>
-            <div className="field"><label>Alertas</label><input value="Ativados" readOnly /></div>
           </div>
 
           <div className="panel">

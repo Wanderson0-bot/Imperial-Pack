@@ -6,7 +6,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from app.auth.dependencies import require_permission
 from app.core.audit import audit
-from app.database.models import ConsumptionHistory, Customer, Order, OrderItem, Partner, PartnerAlert, PartnerCondition, PartnerOpportunity, PartnerReplenishmentCycle, Prediction, PredictionEvaluation, Product, User
+from app.database.models import ConsumptionHistory, Customer, Order, OrderItem, Partner, PartnerCondition, PartnerOpportunity, PartnerReplenishmentCycle, Prediction, PredictionEvaluation, Product, User
 from app.database.session import get_db
 from app.partners.schemas import ConditionsInput, ConsumptionRecord, CycleInput, PartnerCreate, PredictionEvaluationInput
 from app.partners.consumption import observed_consumption
@@ -318,6 +318,3 @@ def evaluate_prediction(prediction_id: str, payload: PredictionEvaluationInput, 
     return evaluation
 
 
-@router.get('/alerts')
-def alerts(_: User = Depends(require_permission('partners:read')), db: Session = Depends(get_db)):
-    return list(db.scalars(select(PartnerAlert).where(PartnerAlert.entity_type == 'partner', PartnerAlert.partner_id.is_not(None), PartnerAlert.resolved_at.is_(None), PartnerAlert.status == 'OPEN').order_by(PartnerAlert.created_at.desc())))

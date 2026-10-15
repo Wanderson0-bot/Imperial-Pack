@@ -7,6 +7,7 @@ import { LoadingState } from '../components/LoadingState';
 import { PageHeader } from '../components/PageHeader';
 import { customerService, type CustomerInput } from '../services/customerService';
 import { orderService } from '../services/orderService';
+import { formatOrderReference } from '../utils/orderReference';
 import { productService } from '../services/productService';
 import type { Customer, Product } from '../types';
 
@@ -120,7 +121,7 @@ export function CustomersPage() {
     try {
       const order = await orderService.createSale({ customerId: saleCustomer.id, customerName: saleCustomer.name, date: saleDate, notes: saleNotes.trim(), items: saleLines.map((line) => ({ productId: line.productId, quantity: Number(line.quantity) })) });
       setSaleCustomer(null);
-      setFeedback(`Venda ${order.id} registrada como pedido novo; indicadores do cliente serão recalculados pela API.`);
+      setFeedback(`Venda ${formatOrderReference(order.id)} registrada como pedido novo; indicadores do cliente serão recalculados pela API.`);
       await loadData();
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Não foi possível registrar a venda.');

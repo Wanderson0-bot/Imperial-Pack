@@ -66,7 +66,7 @@ def serialize(product: Product, db: Session) -> ProductRecord:
     balance = db.scalar(select(InventoryBalance.quantity).where(InventoryBalance.product_id == product.id))
     stock = balance or Decimal('0')
     state = 'Sem estoque' if stock <= 0 else 'Crítico' if stock <= product.minimum_stock / 2 else 'Baixo' if stock <= product.minimum_stock else 'Normal'
-    return ProductRecord(id=product.id, name=product.name, category_id=product.category_id, image_url=product.image_url, description=product.description, unit=product.unit, current_cost=product.current_cost, current_price=product.current_price, minimum_stock=product.minimum_stock, margin_percent=product.margin_percent, markup_percent=product.markup_percent, stock=stock, status=state)
+    return ProductRecord(id=product.id, name=product.name, category_id=product.category_id, image_url=product.image_url, description=product.description, unit=product.unit, current_cost=product.current_cost, current_price=product.current_price, target_margin_percent=product.target_margin_percent, minimum_stock=product.minimum_stock, margin_percent=product.margin_percent, markup_percent=product.markup_percent, stock=stock, status=state)
 
 
 @router.get('', response_model=list[ProductRecord])

@@ -47,8 +47,8 @@ export const authService = {
     finally { cachedUser = null; }
   },
   getUsers: async (): Promise<InternalUser[]> => {
-    const users = await apiRequest<Array<{ id: string; name: string; email: string; role_id: string; is_active: boolean; is_general_admin: boolean }>>('/users');
-    return users.map((user) => ({ id: user.id, name: user.name, email: user.email, role: user.role_id, status: user.is_active ? 'active' : 'blocked', permissions: [], isGeneralAdmin: user.is_general_admin }));
+    const users = await apiRequest<Array<{ id: string; name: string; email: string; role_id: string; role_name?: string; is_active: boolean; is_general_admin: boolean }>>('/users');
+    return users.map((user) => ({ id: user.id, name: user.name, email: user.email, role: user.role_name ?? user.role_id, status: user.is_active ? 'active' : 'blocked', permissions: [], isGeneralAdmin: user.is_general_admin }));
   },
   getRoles: async (): Promise<Array<{ id: string; name: string }>> => {
     return apiRequest('/users/roles');
@@ -57,7 +57,7 @@ export const authService = {
     if (!apiConfiguration.isConfigured) throw new Error('API de funções não configurada.');
     return apiRequest('/users/roles', { method: 'POST', body: JSON.stringify(input) });
   },
-  createUser: async (input: { name: string; email: string; password: string; role_id: string }) => {
+  createUser: async (input: { name: string; email: string; password: string; permissions: string[] }) => {
     if (!apiConfiguration.isConfigured) throw new Error('API de usuários não configurada.');
     return apiRequest('/users', { method: 'POST', body: JSON.stringify(input) });
   },

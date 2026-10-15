@@ -6,12 +6,13 @@ from app.auth.dependencies import require_permission
 from app.core.audit import audit
 from app.database.models import PricingHistory, Product, User
 from app.database.session import get_db
-from app.pricing.calculations import MAX_MARKUP, MIN_MARGIN, STANDARD_MARGIN, commercial_round, margin, markup, maximum_price, minimum_price
+from app.pricing.calculations import commercial_round, margin, markup, maximum_price, minimum_price
 from app.pricing.schemas import PriceApproval, PricingReview
 
 router = APIRouter(prefix='/pricing', tags=['pricing'])
 def review(product: Product) -> PricingReview:
-    suggested = commercial_round(product.current_cost / (1 - STANDARD_MARGIN)) if product.current_cost else Decimal('0')
+    target_margin = product.target_margin_percent / Decimal('100')
+    suggested = commercial_round(product.current_cost / (1 - target_margin)) if product.current_cost else Decimal('0')
     minimum = minimum_price(product.current_cost)
     maximum = maximum_price(product.current_cost)
     return PricingReview(product_id=product.id, product_name=product.name, cost=product.current_cost, current_price=product.current_price, suggested_price=suggested, minimum_price=minimum.quantize(Decimal('0.01')), maximum_price=maximum.quantize(Decimal('0.01')), margin_percent=margin(product.current_price, product.current_cost), markup_percent=markup(product.current_price, product.current_cost))

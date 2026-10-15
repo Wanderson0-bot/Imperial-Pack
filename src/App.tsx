@@ -34,7 +34,8 @@ function App() {
         <Route path="/clientes" element={<CustomersPage />} />
         <Route path="/fornecedores" element={<SuppliersPage />} />
         <Route path="/imperial-partner" element={<PartnerPage />} />
-        <Route path="/alertas" element={<OperationalSignalsPage />} />
+        <Route path="/oportunidades" element={<OperationalSignalsPage />} />
+        <Route path="/alertas" element={<Navigate to="/oportunidades" replace />} />
         <Route path="/inteligencia" element={<IntelligencePage />} />
         <Route path="/relatorios" element={<ReportsPage />} />
         <Route path="/configuracoes" element={<SettingsPage />} />

@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { Logo } from './Logo';
 
 const menuGroups = [
-  { label: 'Visi\u00e3o geral', items: [{ label: 'Visi\u00e3o geral', to: '/', icon: 'overview' }] },
-  { label: 'Opera\u00e7\u00e3o', items: [{ label: 'Nova compra', to: '/compras/nova', icon: 'purchase' }, { label: 'Pedidos', to: '/pedidos', icon: 'orders' }, { label: 'Estoque', to: '/estoque', icon: 'inventory' }, { label: 'Alertas', to: '/alertas', icon: 'alerts' }] },
+  { label: 'Vis\u00e3o geral', items: [{ label: 'Vis\u00e3o geral', to: '/', icon: 'overview' }] },
+  { label: 'Opera\u00e7\u00e3o', items: [{ label: 'Nova compra', to: '/compras/nova', icon: 'purchase' }, { label: 'Pedidos', to: '/pedidos', icon: 'orders' }, { label: 'Estoque', to: '/estoque', icon: 'inventory' }, { label: 'Oportunidades', to: '/oportunidades', icon: 'insights' }] },
   { label: 'Cat\u00e1logo', items: [{ label: 'Produtos', to: '/produtos', icon: 'products' }, { label: 'Precifica\u00e7\u00e3o', to: '/precificacao', icon: 'pricing' }] },
   { label: 'Comercial', items: [{ label: 'Clientes', to: '/clientes', icon: 'customers' }, { label: 'Fornecedores', to: '/fornecedores', icon: 'suppliers' }, { label: 'Imperial Partner', to: '/imperial-partner', icon: 'partner' }] },
   { label: 'Intelig\u00eancia', items: [{ label: 'Intelig\u00eancia', to: '/inteligencia', icon: 'insights' }, { label: 'Relat\u00f3rios', to: '/relatorios', icon: 'reports' }] },
@@ -18,7 +18,6 @@ const iconPaths: Record<string, string> = {
   customers: 'M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2 M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8 M20 8v6 M23 11h-6',
   suppliers: 'M3 21h18 M5 21V7l8-4v18 M19 21V11l-6-4 M9 9v.01 M9 12v.01 M9 15v.01 M9 18v.01', partner: 'M12 3 4 7v5c0 5 3.4 8 8 9 4.6-1 8-4 8-9V7z M9 12l2 2 4-4',
   insights: 'M3 3v18h18 M7 14l4-4 4 4 6-7', reports: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M8 13h8 M8 17h8',
-  alerts: 'M12 22a2 2 0 0 0 2-2h-4a2 2 0 0 0 2 2z M18 16v-5a6 6 0 0 0-5-5.91V4a1 1 0 0 0-2 0v1.09A6 6 0 0 0 6 11v5l-2 2h16z',
   users: 'M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2 M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8 M20 8v6 M23 11h-6',
   settings: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8 M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.7 2.94-.09-.02a1.7 1.7 0 0 0-1.74.73l-.05.08h-3.4l-.05-.08a1.7 1.7 0 0 0-1.74-.73l-.09.02-1.7-2.94.06-.06A1.7 1.7 0 0 0 9.6 15l-.08-.05v-3.4l.08-.05a1.7 1.7 0 0 0-.34-1.88l-.06-.06 1.7-2.94.09.02a1.7 1.7 0 0 0 1.74-.73l.05-.08h3.4l.05.08a1.7 1.7 0 0 0 1.74.73l.09-.02 1.7 2.94-.06.06A1.7 1.7 0 0 0 19.6 11l.08.05v3.4z',
 };

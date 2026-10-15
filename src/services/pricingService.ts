@@ -104,12 +104,13 @@ export const pricingService = {
   },
 
   getRecommendedPrice: async (product: Product): Promise<number> => {
-    return pricingService.calculateRecommendedPrice(product.cost);
+    const targetMargin = Math.min(0.5, Math.max(pricingConfiguration.minimumMargin, product.targetMargin / 100));
+    return pricingService.roundCommercialPrice(product.cost / (1 - targetMargin));
   },
 
   getPriceRanges: async (product: Product): Promise<{ minimumPrice: number; recommendedPrice: number; maximumPrice: number }> => {
     const minimumPrice = product.cost / (1 - pricingConfiguration.minimumMargin);
-    const recommendedPrice = pricingService.calculateRecommendedPrice(product.cost);
+    const recommendedPrice = await pricingService.getRecommendedPrice(product);
     const maximumPrice = product.cost * (1 + pricingConfiguration.maximumMarkup);
 
     return {

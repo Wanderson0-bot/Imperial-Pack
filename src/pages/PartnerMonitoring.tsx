@@ -3,6 +3,7 @@ import { PageHeader } from '../components/PageHeader';
 import { consumptionService, type ProductConsumption } from '../services/consumptionService';
 import { partnerMonitoringService, type PartnerMonitoring as PartnerMonitoringData } from '../services/partnerMonitoringService';
 import { partnerService } from '../services/partnerService';
+import { formatOrderReference } from '../utils/orderReference';
 import type { Customer, PartnerProfile } from '../types';
 
 const cycles: Record<string, string> = { weekly: 'Semanal', fortnightly: 'Quinzenal', monthly: 'Mensal', bimonthly: 'Bimestral', custom: 'Personalizado' };
@@ -25,7 +26,6 @@ export function PartnerMonitoringPage() {
   useEffect(() => { void refresh(); }, []);
   const activeIds = new Set(partners.map((item) => item.profile.customerId));
   const opened = partners.find((item) => item.profile.customerId === openedId);
-  const alertCount = partners.reduce((count, partner) => count + partner.alerts.length, 0);
   const trackedCount = partners.reduce((count, partner) => count + partner.products.length, 0);
   const upcomingCount = partners.reduce((count, partner) => count + partner.products.filter((item) => {
     const date = item.prediction?.replenishmentWindow?.start;
@@ -56,7 +56,6 @@ export function PartnerMonitoringPage() {
       <div><span className="command-kicker">PARCEIROS ATIVOS</span><strong>{partners.length}</strong></div>
       <div><span className="command-kicker">PRODUTOS ACOMPANHADOS</span><strong>{trackedCount}</strong></div>
       <div><span className="command-kicker">REPOSIÇÕES PRÓXIMAS</span><strong>{upcomingCount}</strong></div>
-      <div><span className="command-kicker">ALERTAS</span><strong>{alertCount}</strong></div>
     </div></section>
     <section className="panel">
       <div className="panel__header"><div><h3>Avaliar cliente</h3><p className="panel__description">Associe um cadastro existente; clientes não são duplicados.</p></div></div>
@@ -64,15 +63,18 @@ export function PartnerMonitoringPage() {
       {feedback ? <p role="status">{feedback}</p> : null}
     </section>
     <section className="panel"><div className="panel__header"><div><h3>Carteira parceira</h3><p className="panel__description">O ciclo é planejamento e não cria compra automática.</p></div></div>
-      {!partners.length ? <p className="table-state">Nenhum Imperial Partner ativo.</p> : <div className="table-scroll"><table className="table"><thead><tr><th>Cliente</th><th>Ciclo</th><th>Produtos</th><th>Alertas</th><th></th></tr></thead><tbody>{partners.map((partner) => <tr key={partner.profile.customerId}>
+      {!partners.length ? <p className="table-state">Nenhum Imperial Partner ativo.</p> : <div className="table-scroll"><table className="table"><thead><tr><th>Cliente</th><th>Ciclo</th><th>Produtos</th><th></th></tr></thead><tbody>{partners.map((partner) => <tr key={partner.profile.customerId}>
         <td><strong>{partner.customer?.company ?? partner.customer?.name ?? partner.profile.customerId}</strong><small>{partner.customer?.name}</small></td>
-        <td><select aria-label="Ciclo planejado" value={partner.profile.cycle ?? ''} onChange={(event) => void setCycle(partner, event.target.value)}><option value="">Não definido</option><option value="weekly">Semanal</option><option value="fortnightly">Quinzenal</option><option value="monthly">Mensal</option><option value="bimonthly">Bimestral</option><option value="custom">Personalizado</option></select>{partner.profile.cycle === 'custom' ? <input aria-label="Ciclo em dias" type="number" min="1" placeholder="Dias" value={customDaysDraft[partner.profile.customerId] ?? String(partner.profile.customCycleDays ?? '')} onChange={(event) => setCustomDaysDraft((current) => ({ ...current, [partner.profile.customerId]: event.target.value }))} onBlur={(event) => void setCustomDays(partner, Number(event.target.value))} /> : <small>{partner.profile.cycle ? cycles[partner.profile.cycle] : 'Planejamento não definido'}</small>}</td>
-        <td>{partner.products.length}</td><td>{partner.alerts.length}</td><td><button className="btn btn--secondary" type="button" onClick={() => void openPartner(partner)}>{openedId === partner.profile.customerId ? 'Atualizar' : 'Abrir parceiro'}</button></td>
+        <td><select aria-label="Ciclo planejado" value={partner.profile.cycle ?? ''} onChange={(event) => void setCycle(partner, event.target.value)}><option value="">Não definido</option><option value="weekly">Semanal</option><option value="fortnightly">Quinzenal</option><option value="monthly">Mensal</option><option value="bimonthly">Bimestral</option><option value="custom">Personalizado</option></select>{partner.profile.cycle === 'custom' ? <input aria-label="Ciclo em dias" type="number" min="1" placeholder="Dias" value={customDaysDraft[partner.profile.customerId] ?? String(partner.profile.customCycleDays ?? '')} onChange={(event) => setCustomDaysDraft((current) => ({ ...current, [partner.profile.customerId]: event.target.value }))} onBlur={(event) => void setCustomDays(partner, Number(event.target.value))} /> : partner.profile.cycle ? <small>{cycles[partner.profile.cycle]}</small> : null}</td>
+        <td>{partner.products.length}</td><td><button className="btn btn--secondary" type="button" onClick={() => void openPartner(partner)}>{openedId === partner.profile.customerId ? 'Atualizar' : 'Abrir parceiro'}</button></td>
       </tr>)}</tbody></table></div>}
     </section>
-    {opened ? <>
-      <section className="panel"><div className="panel__header"><div><h3>{opened.customer?.company ?? opened.customer?.name ?? opened.profile.customerId}</h3><p className="panel__description">{opened.customer?.name} · {opened.customer?.phone}</p></div><button className="btn btn--secondary" type="button" onClick={() => setOpenedId('')}>Fechar</button></div>
-        <h4>Condições comerciais</h4>{opened.profile.conditions ? <dl className="report-facts"><div><dt>Desconto</dt><dd>{opened.profile.conditions.discountPercent === undefined ? 'Não definido' : `${opened.profile.conditions.discountPercent}%`}</dd></div><div><dt>Prazo autorizado</dt><dd>{opened.profile.conditions.paymentTermDays === undefined ? 'Não definido' : `${opened.profile.conditions.paymentTermDays} dias`}</dd></div><div><dt>Forma de pagamento</dt><dd>{opened.profile.conditions.paymentMethod ?? 'Não definida'}</dd></div><div><dt>Limite</dt><dd>{opened.profile.conditions.creditLimit === undefined ? 'Não definido' : `R$ ${opened.profile.conditions.creditLimit.toFixed(2)}`}</dd></div><div><dt>Prioridade</dt><dd>{opened.profile.conditions.servicePriority ?? 'Não definida'}</dd></div></dl> : <p className="table-state">Condições comerciais não configuradas.</p>}
+    {opened ? <div className="partner-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpenedId(''); }}>
+      <section className="partner-modal" role="dialog" aria-modal="true" aria-labelledby="partner-modal-title">
+      <header className="partner-modal__header"><div><span className="eyebrow">IMPERIAL PARTNER</span><h2 id="partner-modal-title">{opened.customer?.company ?? opened.customer?.name ?? opened.profile.customerId}</h2><p>{opened.customer?.name}{opened.customer?.phone ? ` · ${opened.customer.phone}` : ''}</p></div><button className="btn btn--secondary" type="button" aria-label="Fechar detalhes do parceiro" onClick={() => setOpenedId('')}>Fechar</button></header>
+      <div className="partner-modal__body">
+      <section className="panel"><div className="panel__header"><div><h3>Condições comerciais</h3><p className="panel__description">Condições e ciclo de atendimento deste parceiro.</p></div></div>
+        {opened.profile.conditions ? <dl className="report-facts"><div><dt>Desconto</dt><dd>{opened.profile.conditions.discountPercent === undefined ? 'Não definido' : `${opened.profile.conditions.discountPercent}%`}</dd></div><div><dt>Prazo autorizado</dt><dd>{opened.profile.conditions.paymentTermDays === undefined ? 'Não definido' : `${opened.profile.conditions.paymentTermDays} dias`}</dd></div><div><dt>Forma de pagamento</dt><dd>{opened.profile.conditions.paymentMethod ?? 'Não definida'}</dd></div><div><dt>Limite</dt><dd>{opened.profile.conditions.creditLimit === undefined ? 'Não definido' : `R$ ${opened.profile.conditions.creditLimit.toFixed(2)}`}</dd></div><div><dt>Prioridade</dt><dd>{opened.profile.conditions.servicePriority ?? 'Não definida'}</dd></div></dl> : <p className="table-state">Condições comerciais não configuradas.</p>}
         <p>Ciclo: <strong>{opened.profile.cycle ? cycles[opened.profile.cycle] : 'Não definido'}{opened.profile.cycle === 'custom' && opened.profile.customCycleDays ? ` · ${opened.profile.customCycleDays} dias` : ''}</strong>. Sem obrigação de compra.</p>
       </section>
       <section className="panel"><div className="panel__header"><div><h3>Produtos acompanhados</h3><p className="panel__description">Consumo calculado apenas a partir das compras detalhadas registradas.</p></div></div>
@@ -83,14 +85,14 @@ export function PartnerMonitoringPage() {
         </tr>)}</tbody></table></div>}
       </section>
       <section className="panel"><div className="panel__header"><div><h3>Histórico de compras</h3><p className="panel__description">Produto, quantidade, data, origem, preço e intervalo observado.</p></div></div>
-        {!opened.products.some((item) => item.consumption.purchases.length) ? <p className="table-state">Nenhuma linha detalhada de compra registrada.</p> : <div className="table-scroll"><table className="table"><thead><tr><th>Produto</th><th>Qtd.</th><th>Data</th><th>Pedido / origem</th><th>Preço unitário</th><th>Intervalo</th></tr></thead><tbody>{opened.products.flatMap((item) => item.consumption.purchases.map((record) => <tr key={`${record.orderId}-${record.productId}`}><td>{item.product?.name ?? record.productId}</td><td>{record.quantity}</td><td>{dateLabel(record.purchasedAt)}</td><td>{record.orderId} · {record.source}</td><td>R$ {record.unitPrice.toFixed(2)}</td><td>{record.intervalSincePreviousDays === undefined ? 'Primeira compra registrada' : `${record.intervalSincePreviousDays} dias`}</td></tr>))}</tbody></table></div>}
+        {!opened.products.some((item) => item.consumption.purchases.length) ? <p className="table-state">Nenhuma linha detalhada de compra registrada.</p> : <div className="table-scroll"><table className="table"><thead><tr><th>Produto</th><th>Qtd.</th><th>Data</th><th>Pedido / origem</th><th>Preço unitário</th><th>Intervalo</th></tr></thead><tbody>{opened.products.flatMap((item) => item.consumption.purchases.map((record) => <tr key={`${record.orderId}-${record.productId}`}><td>{item.product?.name ?? record.productId}</td><td>{record.quantity}</td><td>{dateLabel(record.purchasedAt)}</td><td>{formatOrderReference(record.orderId)} · {record.source}</td><td>R$ {record.unitPrice.toFixed(2)}</td><td>{record.intervalSincePreviousDays === undefined ? 'Primeira compra registrada' : `${record.intervalSincePreviousDays} dias`}</td></tr>))}</tbody></table></div>}
       </section>
-      <section className="panel"><div className="panel__header"><div><h3>Alertas e oportunidades</h3><p className="panel__description">Toda recomendação exige confirmação do parceiro antes de qualquer pedido.</p></div></div>
-        {opened.alerts.map((alert) => <p key={alert} role="status">{alert}</p>)}
+      <section className="panel"><div className="panel__header"><div><h3>Oportunidades</h3><p className="panel__description">Toda recomendação exige confirmação do parceiro antes de qualquer pedido.</p></div></div>
         {opened.products.some((item) => item.prediction?.replenishmentWindow) ? <p>Reposição recomendada. Confirme com o parceiro antes de gerar pedido; nenhuma ação automática será executada.</p> : null}
         <h4>Produtos sem compra registrada neste histórico</h4>{opened.opportunities.length ? <ul>{opened.opportunities.map((product) => <li key={product.id}>{product.name}</li>)}</ul> : <p className="table-state">Sem histórico detalhado para identificar oportunidades.</p>}
         <p>{opened.predictionStatus === 'insufficient-data' ? 'Dados insuficientes para previsão confiável' : opened.predictionStatus === 'model-unavailable' ? 'Nenhuma previsão ML validada disponível para este parceiro/produto' : 'Previsão ML disponível; quantidade e janela são estimadas, sem observação de estoque físico'}.</p>
       </section>
-    </> : null}
+      </div></section>
+    </div> : null}
   </div>;
 }

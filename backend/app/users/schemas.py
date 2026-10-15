@@ -5,7 +5,8 @@ class UserCreate(BaseModel):
     name: str = Field(min_length=2, max_length=180)
     email: EmailStr
     password: str = Field(min_length=12, max_length=256)
-    role_id: str
+    role_id: str | None = None
+    permissions: list[str] | None = None
     is_active: bool = True
     is_general_admin: bool = False
 
@@ -21,6 +22,7 @@ class UserRecord(BaseModel):
     name: str
     email: EmailStr
     role_id: str
+    role_name: str | None = None
     is_active: bool
     is_general_admin: bool
 

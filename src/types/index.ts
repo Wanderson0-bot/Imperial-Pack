@@ -38,6 +38,7 @@ export type Product = {
   cost: number;
   price: number;
   margin: number;
+  targetMargin: number;
   markup: number;
   stock: number;
   minStock: number;

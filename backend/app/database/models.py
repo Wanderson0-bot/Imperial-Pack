@@ -111,6 +111,7 @@ class Product(Base, Timestamped):
     current_cost: Mapped[Decimal] = mapped_column(Numeric(14, 4), default=0, nullable=False)
     current_price: Mapped[Decimal] = mapped_column(Numeric(14, 4), default=0, nullable=False)
     margin_percent: Mapped[Decimal] = mapped_column(Numeric(8, 4), default=0, nullable=False)
+    target_margin_percent: Mapped[Decimal] = mapped_column(Numeric(8, 4), default=30, nullable=False)
     markup_percent: Mapped[Decimal] = mapped_column(Numeric(8, 4), default=0, nullable=False)
     minimum_stock: Mapped[Decimal] = mapped_column(Numeric(14, 3), default=0, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)

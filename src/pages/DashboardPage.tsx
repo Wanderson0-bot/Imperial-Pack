@@ -8,6 +8,8 @@ import { inventoryService } from '../services/inventoryService';
 import { orderService } from '../services/orderService';
 import { purchaseService } from '../services/purchaseService';
 import { productService } from '../services/productService';
+import { formatOrderReference } from '../utils/orderReference';
+import { formatPurchaseReference } from '../utils/purchaseReference';
 import type { InventoryMovement, Order, Product, Purchase } from '../types';
 const currency = (value: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 const dateLabel = (value: string) => new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short' }).format(new Date(`${value}T12:00:00`));
@@ -33,9 +35,9 @@ export function DashboardPage() {
   const salesTotal = orders.reduce((sum, order) => sum + order.value, 0);
   const stockValue = products.reduce((sum, product) => sum + product.cost * product.stock, 0);
   const activities: Activity[] = [
-    ...orders.map((order) => ({ id: `order-${order.id}`, date: order.date, kind: 'PEDIDO', title: `${order.id} \u00b7 ${order.customer}`, detail: `${order.items} itens \u00b7 ${currency(order.value)} \u00b7 ${order.status}`, href: '/pedidos', tone: 'info' as const })),
-    ...purchases.map((purchase) => ({ id: `purchase-${purchase.id}`, date: purchase.date, kind: 'COMPRA', title: `${purchase.id} \u00b7 ${purchase.supplier}`, detail: `${purchase.items.length} itens \u00b7 ${currency(purchase.totalValue)} \u00b7 ${purchase.status}`, href: '/compras/nova', tone: 'success' as const })),
-    ...movements.map((movement) => { const product = products.find((item) => item.id === movement.productId); return { id: `movement-${movement.id}`, date: movement.date, kind: 'ESTOQUE', title: product?.name ?? movement.productId, detail: `${movement.type} de ${movement.quantity} \u00b7 ${movement.reason}`, href: '/estoque', tone: 'warning' as const }; }),
+    ...orders.map((order) => ({ id: `order-${order.id}`, date: order.date, kind: 'PEDIDO', title: order.customer, detail: `${formatOrderReference(order.id)} \u00b7 ${order.items} itens \u00b7 ${currency(order.value)} \u00b7 ${order.status}`, href: '/pedidos', tone: 'info' as const })),
+    ...purchases.map((purchase) => ({ id: `purchase-${purchase.id}`, date: purchase.date, kind: 'COMPRA', title: purchase.supplier, detail: `${formatPurchaseReference(purchase.id)} \u00b7 ${purchase.items.length} itens \u00b7 ${currency(purchase.totalValue)} \u00b7 ${purchase.status}`, href: '/compras/nova', tone: 'success' as const })),
+    ...movements.map((movement) => { const product = products.find((item) => item.id === movement.productId); return { id: `movement-${movement.id}`, date: movement.date, kind: 'ESTOQUE', title: product?.name ?? 'Produto sem cadastro', detail: `${movement.type} de ${movement.quantity} \u00b7 ${movement.reason}`, href: '/estoque', tone: 'warning' as const }; }),
   ].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 6);
   const topProducts = [...products].sort((a, b) => (a.stock - a.minStock) - (b.stock - b.minStock)).slice(0, 4);
   const attentionCount = lowStock.length + needsPricing.length + pendingPurchases.length + operationalOrders.length;
@@ -47,8 +49,8 @@ export function DashboardPage() {
       {attentionCount === 0 ? <p className="command-empty">Nenhuma pend&ecirc;ncia operacional identificada.</p> : <div className="command-issues">
         {lowStock.slice(0, 4).map((product) => <article className="command-issue" key={`stock-${product.id}`}><StatusBadge tone={product.stock === 0 ? 'danger' : 'warning'}>{product.stock === 0 ? 'Sem estoque' : 'Estoque baixo'}</StatusBadge><div><strong>{product.name}</strong><p>{product.stock} {product.unit} dispon&iacute;veis &middot; m&iacute;nimo {product.minStock}</p></div><Link to="/estoque" className="command-link">Ver estoque <span aria-hidden="true">&#8599;</span></Link></article>)}
         {needsPricing.map((product) => <article className="command-issue" key={`pricing-${product.id}`}><StatusBadge tone="warning">Precifica&ccedil;&atilde;o</StatusBadge><div><strong>{product.name}</strong><p>Produto sem pre&ccedil;o de venda v&aacute;lido</p></div><Link to="/precificacao" className="command-link">Revisar pre&ccedil;o <span aria-hidden="true">&#8599;</span></Link></article>)}
-        {pendingPurchases.map((purchase) => <article className="command-issue" key={`pending-${purchase.id}`}><StatusBadge tone="info">Compra pendente</StatusBadge><div><strong>{purchase.supplier}</strong><p>{purchase.id} &middot; {purchase.status} &middot; {currency(purchase.totalValue)}</p></div><Link to="/compras/nova" className="command-link">Ver compras <span aria-hidden="true">&#8599;</span></Link></article>)}
-        {operationalOrders.slice(0, 3).map((order) => <article className="command-issue" key={`pending-order-${order.id}`}><StatusBadge tone="info">{`Pedido \u00b7 ${order.status}`}</StatusBadge><div><strong>{order.customer}</strong><p>{order.id} &middot; {order.items} itens &middot; {currency(order.value)}</p></div><Link to="/pedidos" className="command-link">Ver pedido <span aria-hidden="true">&#8599;</span></Link></article>)}
+        {pendingPurchases.map((purchase) => <article className="command-issue" key={`pending-${purchase.id}`}><StatusBadge tone="info">Compra pendente</StatusBadge><div><strong>{purchase.supplier}</strong><p>{formatPurchaseReference(purchase.id)} &middot; {purchase.status} &middot; {currency(purchase.totalValue)}</p></div><Link to="/compras/nova" className="command-link">Ver compras <span aria-hidden="true">&#8599;</span></Link></article>)}
+        {operationalOrders.slice(0, 3).map((order) => <article className="command-issue" key={`pending-order-${order.id}`}><StatusBadge tone="info">{`Pedido \u00b7 ${order.status}`}</StatusBadge><div><strong>{order.customer}</strong><p>{formatOrderReference(order.id)} &middot; {order.items} itens &middot; {currency(order.value)}</p></div><Link to="/pedidos" className="command-link">Ver pedido <span aria-hidden="true">&#8599;</span></Link></article>)}
       </div>}
     </section>
     <div className="command-lower-grid"><section className="command-activity" aria-labelledby="activity-heading"><div className="command-section-heading"><div><span className="command-kicker">O QUE MUDOU</span><h2 id="activity-heading">Atividade operacional</h2></div><Link className="command-link" to="/pedidos">Abrir pedidos <span aria-hidden="true">&#8599;</span></Link></div>

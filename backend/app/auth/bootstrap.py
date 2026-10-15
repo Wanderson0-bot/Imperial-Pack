@@ -17,7 +17,7 @@ PERMISSIONS = {
     'pricing:read': 'View pricing reviews', 'pricing:approve': 'Approve prices',
     'partners:read': 'View Imperial Partners', 'partners:activate': 'Activate Imperial Partners', 'partners:deactivate': 'Deactivate Imperial Partners', 'partners:conditions': 'Manage partner cycles and conditions', 'partners:evaluate_predictions': 'Evaluate prediction outcomes',
     'finance:read': 'View financial records', 'finance:write': 'Manage financial records',
-    'alerts:manage': 'Resolve and ignore operational alerts', 'opportunities:manage': 'Update operational opportunities',
+'opportunities:manage': 'Update operational opportunities',
     'intelligence:read': 'View intelligence status', 'intelligence:train': 'Train and activate validated intelligence models', 'reports:read': 'View reports',
 }
 

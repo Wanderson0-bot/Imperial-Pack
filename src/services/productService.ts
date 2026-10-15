@@ -1,8 +1,8 @@
 import type { CostHistoryEntry, PriceHistoryEntry, Product } from '../types';
 import { apiRequest } from './apiClient';
 
-type ProductDto = { id: string; name: string; category_id?: string | null; image_url?: string | null; description?: string | null; unit: string; current_cost: number | string; current_price: number | string; margin_percent: number | string; markup_percent: number | string; stock: number | string; minimum_stock: number | string; status: Product['status'] };
-const mapProduct = (row: ProductDto): Product => ({ id: row.id, name: row.name, category: row.category_id ?? 'Sem categoria', description: row.description ?? '', image: row.image_url ?? '', unit: row.unit, cost: Number(row.current_cost), price: Number(row.current_price), margin: Number(row.margin_percent), markup: Number(row.markup_percent), stock: Number(row.stock), minStock: Number(row.minimum_stock), supplier: '', status: row.status });
+type ProductDto = { id: string; name: string; category_id?: string | null; image_url?: string | null; description?: string | null; unit: string; current_cost: number | string; current_price: number | string; margin_percent: number | string; target_margin_percent: number | string; markup_percent: number | string; stock: number | string; minimum_stock: number | string; status: Product['status'] };
+const mapProduct = (row: ProductDto): Product => ({ id: row.id, name: row.name, category: row.category_id ?? 'Sem categoria', description: row.description ?? '', image: row.image_url ?? '', unit: row.unit, cost: Number(row.current_cost), price: Number(row.current_price), margin: Number(row.margin_percent), targetMargin: Number(row.target_margin_percent), markup: Number(row.markup_percent), stock: Number(row.stock), minStock: Number(row.minimum_stock), supplier: '', status: row.status });
 const categoryId = async (name: string): Promise<string | undefined> => {
   const categories = await apiRequest<Array<{ id: string; name: string }>>('/products/categories');
   return categories.find((category) => category.name === name)?.id;
@@ -30,12 +30,12 @@ export const productService = {
   },
   updateProduct: async (product: Product): Promise<Product> => {
     const id = await categoryId(product.category);
-    const row = await apiRequest<ProductDto>(`/products/${product.id}`, { method: 'PATCH', body: JSON.stringify({ name: product.name, category_id: id, image_url: product.image, description: product.description, unit: product.unit, current_price: product.price, minimum_stock: product.minStock }) });
+    const row = await apiRequest<ProductDto>(`/products/${product.id}`, { method: 'PATCH', body: JSON.stringify({ name: product.name, category_id: id, image_url: product.image, description: product.description, unit: product.unit, current_price: product.price, target_margin_percent: product.targetMargin, minimum_stock: product.minStock }) });
     return mapProductDto(row);
   },
   create: async (product: Product): Promise<Product> => {
     const id = await categoryId(product.category);
-    const row = await apiRequest<ProductDto>('/products', { method: 'POST', body: JSON.stringify({ name: product.name, category_id: id, image_url: product.image, description: product.description, unit: product.unit, current_cost: product.cost, current_price: product.price, minimum_stock: product.minStock }) });
+    const row = await apiRequest<ProductDto>('/products', { method: 'POST', body: JSON.stringify({ name: product.name, category_id: id, image_url: product.image, description: product.description, unit: product.unit, current_cost: product.cost, current_price: product.price, target_margin_percent: product.targetMargin, minimum_stock: product.minStock }) });
     return mapProductDto(row);
   },
   remove: async (id: string): Promise<void> => {

@@ -15,7 +15,6 @@ from app.database.models import (
     Order,
     OrderItem,
     Partner,
-    PartnerAlert,
     PartnerOpportunity,
     Product,
     Supplier,
@@ -316,26 +315,8 @@ def build_operational_signals(db: Session, scopes: set[str], now: datetime | Non
 
 def refresh_operational_signals(db: Session, scopes: set[str], now: datetime | None = None) -> tuple[bool, list[str]]:
     current = _utc(now or datetime.now(timezone.utc))
-    alerts, opportunities, history_available = build_operational_signals(db, scopes, current)
+    _, opportunities, history_available = build_operational_signals(db, scopes, current)
     active_entities = {entity for entity, scope in ENTITY_SCOPE.items() if scope in scopes}
-    alert_keys = set()
-    for values in alerts:
-        alert_keys.add(values['dedupe_key'])
-        record = db.scalar(select(PartnerAlert).where(PartnerAlert.dedupe_key == values['dedupe_key']))
-        if record is None:
-            record = PartnerAlert(**values, message=values['description'], detected_at=current)
-            db.add(record)
-        else:
-            was_inactive = not record.is_active
-            for key, value in values.items():
-                setattr(record, key, value)
-            record.message = values['description']
-            record.detected_at = current
-            record.is_active = True
-            if was_inactive:
-                record.status = 'OPEN'
-                record.resolved_at = None
-
     opportunity_keys = set()
     for values in opportunities:
         opportunity_keys.add(values['dedupe_key'])
@@ -350,12 +331,6 @@ def refresh_operational_signals(db: Session, scopes: set[str], now: datetime | N
             if was_inactive:
                 record.status = 'OPEN'
 
-    for record in db.scalars(select(PartnerAlert).where(PartnerAlert.dedupe_key.is_not(None), PartnerAlert.entity_type.in_(active_entities))):
-        if record.dedupe_key not in alert_keys and record.is_active:
-            record.is_active = False
-            if record.status == 'OPEN':
-                record.status = 'RESOLVED'
-                record.resolved_at = current
     for record in db.scalars(select(PartnerOpportunity).where(PartnerOpportunity.dedupe_key.is_not(None), PartnerOpportunity.entity_type.in_(active_entities))):
         if record.dedupe_key not in opportunity_keys and record.is_active:
             record.is_active = False

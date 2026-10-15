@@ -9,13 +9,11 @@ export type TrackedPartnerProduct = {
   consumption: ProductConsumption;
   prediction?: ReplenishmentPrediction;
   status: string;
-  alert?: string;
 };
 export type PartnerMonitoring = {
   customer?: Customer;
   profile: PartnerProfile;
   products: TrackedPartnerProduct[];
-  alerts: string[];
   opportunities: Product[];
   predictionStatus: 'insufficient-data' | 'model-unavailable' | 'ready';
 };
@@ -24,7 +22,6 @@ export type PartnerMonitoringOverview = {
   activePartners: number;
   monitoredProducts: number;
   upcomingReplenishments: number;
-  alertCount: number;
 };
 
 export const partnerMonitoringService = {
@@ -51,21 +48,15 @@ export const partnerMonitoringService = {
           consumption: item,
           prediction,
           status: depletionBeforeCycle ? 'Risco antes do ciclo planejado' : hasReplenishment ? 'Reposição prevista' : possibleRisk ? 'Possível risco' : 'Acompanhamento ativo',
-          alert: hasReplenishment
-            ? 'Reposição recomendada. Confirme a necessidade com o parceiro antes de registrar pedido.'
-            : possibleRisk ? depletionBeforeCycle ? 'Esgotamento previsto antes do próximo ciclo. Recomenda-se confirmar o consumo com o parceiro.' : 'Possível risco de ruptura; confirmar consumo com o parceiro.' : undefined,
+
         };
       });
-      const alerts = trackedProducts.flatMap((item) => item.alert ? [item.alert] : []);
-      if (predictionResult.status === 'insufficient-data') alerts.push('Dados insuficientes para previsão confiável');
-      if (predictionResult.status === 'model-unavailable') alerts.push('Histórico disponível; previsões dependem da conexão do modelo ML');
       const purchasedIds = new Set(consumption.map((item) => item.productId));
       const opportunities = consumption.length ? catalog.filter((product) => !purchasedIds.has(product.id)) : [];
       return {
         customer: customers.find((customer) => customer.id === profile.customerId),
         profile,
         products: trackedProducts,
-        alerts,
         opportunities,
         predictionStatus: predictionResult.status,
       };
@@ -80,7 +71,6 @@ export const partnerMonitoringService = {
       activePartners: activeProfiles.length,
       monitoredProducts: partners.reduce((total, partner) => total + partner.products.length, 0),
       upcomingReplenishments,
-      alertCount: partners.reduce((total, partner) => total + partner.alerts.length, 0),
     };
   },
 };

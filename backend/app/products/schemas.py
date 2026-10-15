@@ -10,6 +10,7 @@ class ProductCreate(BaseModel):
     unit: str = Field(min_length=1, max_length=30)
     current_cost: Decimal = Field(ge=0)
     current_price: Decimal = Field(ge=0)
+    target_margin_percent: Decimal = Field(default=Decimal('30'), ge=20, le=50)
     minimum_stock: Decimal = Field(ge=0)
 
 
@@ -28,6 +29,7 @@ class ProductUpdate(BaseModel):
     description: str | None = None
     unit: str | None = None
     current_price: Decimal | None = Field(default=None, ge=0)
+    target_margin_percent: Decimal | None = Field(default=None, ge=20, le=50)
     minimum_stock: Decimal | None = Field(default=None, ge=0)
     is_active: bool | None = None
 

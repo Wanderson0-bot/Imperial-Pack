@@ -9,10 +9,12 @@ import { PageHeader } from '../components/PageHeader';
 import { productService } from '../services/productService';
 import { calculatePurchaseSummary, toCents } from '../services/purchaseCalculations';
 import { purchaseService } from '../services/purchaseService';
+import { formatPurchaseReference } from '../utils/purchaseReference';
 import { supplierService } from '../services/supplierService';
 import type { Product, PurchaseDraft, PurchaseDraftItem } from '../types';
 
 type PurchaseRow = PurchaseDraftItem & { clientId: string };
+type PurchaseStep = 1 | 2 | 3;
 type ItemForm = { productId: string; quantity: string; unitCost: string; discount: string; description: string };
 type PurchaseForm = { supplierId: string; date: string; documentNumber: string; freight: string; observations: string };
 
@@ -49,6 +51,7 @@ export function PurchasePage() {
   const [feedback, setFeedback] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [step, setStep] = useState<PurchaseStep>(1);
 
   useEffect(() => {
     let active = true;
@@ -167,10 +170,11 @@ export function PurchasePage() {
     setIsSaving(true);
     try {
       const result = await purchaseService.confirmPurchase(draft);
-      setFeedback(`Compra ${result.purchase.id} registrada; estoque e custos históricos atualizados.`);
+      setFeedback(`Compra ${formatPurchaseReference(result.purchase.id)} registrada; estoque e custos históricos atualizados.`);
       setItems([]);
       setPurchase(initialPurchase(purchase.supplierId));
       resetItemForm();
+      setStep(1);
     } catch (error) {
       setFormError(error instanceof Error ? error.message : 'Não foi possível registrar a compra.');
     } finally {
@@ -178,14 +182,60 @@ export function PurchasePage() {
     }
   };
 
+  const continueToProducts = () => {
+    setFormError('');
+    const freight = parseAmount(purchase.freight);
+    if (!purchase.supplierId || !suppliers.some((supplier) => supplier.id === purchase.supplierId)) {
+      setFormError('Selecione um fornecedor cadastrado.');
+      return;
+    }
+    if (!purchase.date) {
+      setFormError('Informe a data da compra.');
+      return;
+    }
+    if (!Number.isFinite(freight) || freight < 0) {
+      setFormError('O frete n\u00e3o pode ser negativo.');
+      return;
+    }
+    setStep(2);
+  };
+
+  const continueToSummary = () => {
+    setFormError('');
+    if (!items.length) {
+      setFormError('Adicione pelo menos um produto \u00e0 compra.');
+      return;
+    }
+    if (editingItemId) {
+      setFormError('Salve ou cancele a edi\u00e7\u00e3o do produto antes de avan\u00e7ar.');
+      return;
+    }
+    setStep(3);
+  };
+
+  const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
+    if (step === 1) {
+      event.preventDefault();
+      continueToProducts();
+      return;
+    }
+    if (step === 2) {
+      event.preventDefault();
+      continueToSummary();
+      return;
+    }
+    void submitPurchase(event);
+  };
+
   return <>
     <Header title="Nova compra" breadcrumb="Compras / Nova compra" />
     <div className="page-shell purchase-page">
       <PageHeader title="Nova compra" description="Registre o fornecedor, os produtos e os custos desta entrada." />
       {loadError ? <ErrorState message={loadError} /> : null}
+      {feedback ? <p className="purchase-feedback" role="status">{feedback}</p> : null}
       {isLoading ? <LoadingState message="Carregando fornecedores e produtos…" /> : null}
-      {!isLoading && !loadError ? <form onSubmit={(event) => void submitPurchase(event)}>
-        <section className="panel purchase-panel">
+      {!isLoading && !loadError ? <form onSubmit={handleFormSubmit}>
+        {step === 1 ? <section className="panel purchase-panel">
           <div className="panel__header"><div><h3>Dados gerais</h3><p className="panel__description">Identificação da nota e custos da compra.</p></div></div>
           <div className="purchase-general-grid">
             <div className="field"><label htmlFor="purchase-supplier">Fornecedor</label><select id="purchase-supplier" value={purchase.supplierId} onChange={(event) => setPurchase((current) => ({ ...current, supplierId: event.target.value }))} required><option value="" disabled>Selecione um fornecedor</option>{suppliers.map((supplier) => <option key={supplier.id} value={supplier.id}>{supplier.name}</option>)}</select></div>
@@ -194,9 +244,11 @@ export function PurchasePage() {
             <div className="field"><label htmlFor="purchase-freight">Frete</label><input id="purchase-freight" type="number" min="0" step="0.01" inputMode="decimal" value={purchase.freight} onChange={(event) => setPurchase((current) => ({ ...current, freight: event.target.value }))} required /></div>
             <div className="field purchase-observations"><label htmlFor="purchase-observations">Observações <span className="purchase-optional">Opcional</span></label><textarea id="purchase-observations" rows={2} value={purchase.observations} onChange={(event) => setPurchase((current) => ({ ...current, observations: event.target.value }))} maxLength={2000} /></div>
           </div>
-        </section>
+          {formError ? <ErrorState message={formError} /> : null}
+          <div className="purchase-submit"><button type="button" className="btn btn--primary" onClick={continueToProducts}>Avan&#231;ar</button></div>
+        </section> : null}
 
-        <section className="panel purchase-panel">
+        {step === 2 ? <section className="panel purchase-panel">
           <div className="panel__header"><div><h3>Produtos da compra</h3><p className="panel__description">Inclua cada produto uma vez ou em linhas separadas, conforme a nota.</p></div></div>
           {!products.length ? <EmptyState title="Nenhum produto disponível" description="Cadastre ou ative produtos antes de registrar uma compra." /> : <>
             <div className="purchase-item-form">
@@ -204,7 +256,7 @@ export function PurchasePage() {
               <div className="field"><label htmlFor="purchase-item-quantity">Quantidade</label><input id="purchase-item-quantity" type="number" min="0.001" step="0.001" inputMode="decimal" value={itemForm.quantity} onChange={(event) => setItemForm((current) => ({ ...current, quantity: event.target.value }))} required /></div>
               <div className="field"><label htmlFor="purchase-item-unit-cost">Valor unitário</label><input id="purchase-item-unit-cost" type="number" min="0" step="0.01" inputMode="decimal" value={itemForm.unitCost} onChange={(event) => setItemForm((current) => ({ ...current, unitCost: event.target.value }))} required /></div>
               <div className="field"><label htmlFor="purchase-item-discount">Desconto</label><input id="purchase-item-discount" type="number" min="0" step="0.01" inputMode="decimal" value={itemForm.discount} onChange={(event) => setItemForm((current) => ({ ...current, discount: event.target.value }))} /></div>
-              <div className="field purchase-item-form__description"><label htmlFor="purchase-item-description">Descrição <span className="purchase-optional">Opcional</span></label><input id="purchase-item-description" value={itemForm.description} onChange={(event) => setItemForm((current) => ({ ...current, description: event.target.value }))} maxLength={1000} /></div>
+              <div className="field purchase-item-form__description"><label htmlFor="purchase-item-description">Observação <span className="purchase-optional">Opcional</span></label><input id="purchase-item-description" value={itemForm.description} onChange={(event) => setItemForm((current) => ({ ...current, description: event.target.value }))} maxLength={1000} /></div>
               <div className="purchase-item-form__actions"><button type="button" className="btn btn--primary" onClick={saveItem}>{editingItemId ? 'Salvar produto' : '+ Adicionar produto'}</button>{editingItemId ? <button type="button" className="btn btn--secondary" onClick={resetItemForm}>Cancelar edição</button> : null}</div>
             </div>
             {selectedProduct ? <p className="purchase-current-product">Unidade cadastrada: {selectedProduct.unit}</p> : null}
@@ -214,9 +266,11 @@ export function PurchasePage() {
               return <tr key={item.clientId}><td><strong>{product?.name ?? 'Produto indisponível'}</strong>{item.description ? <small className="purchase-item-description">{item.description}</small> : null}</td><td>{item.quantity.toLocaleString('pt-BR', { maximumFractionDigits: 3 })}</td><td>{currency.format(item.unitCost)}</td><td>{formatCents(amounts.discountCents)}</td><td><strong>{formatCents(amounts.subtotalCents)}</strong></td><td><div className="purchase-row-actions"><button type="button" className="btn btn--secondary" onClick={() => editItem(item)}>Editar</button><button type="button" className="btn btn--secondary" onClick={() => removeItem(item.clientId)}>Remover</button></div></td></tr>;
             })} /> : <EmptyState title="Nenhum produto adicionado" description="Selecione um produto, informe quantidade e valores e adicione à compra." />}
           </>}
-        </section>
+          {formError ? <ErrorState message={formError} /> : null}
+          <div className="purchase-submit"><button type="button" className="btn btn--secondary" onClick={() => { setFormError(''); setStep(1); }}>Voltar</button><button type="button" className="btn btn--primary" onClick={continueToSummary}>Avan&#231;ar</button></div>
+        </section> : null}
 
-        <section className="panel purchase-summary-panel" aria-labelledby="purchase-summary-title">
+        {step === 3 ? <section className="panel purchase-summary-panel" aria-labelledby="purchase-summary-title">
           <div className="panel__header"><div><h3 id="purchase-summary-title">Resumo financeiro</h3><p className="panel__description">Totais calculados a partir dos itens e do frete informado.</p></div></div>
           <dl className="purchase-summary">
             <div><dt>Subtotal dos produtos</dt><dd>{formatCents(summary.productsSubtotalCents)}</dd></div>
@@ -225,9 +279,8 @@ export function PurchasePage() {
             <div className="purchase-summary__total"><dt>Total da compra</dt><dd>{formatCents(summary.totalCents)}</dd></div>
           </dl>
           {formError ? <ErrorState message={formError} /> : null}
-          {feedback ? <p className="purchase-feedback" role="status">{feedback}</p> : null}
-          <div className="purchase-submit"><button type="submit" className="btn btn--primary" disabled={isSaving || isLoading || !suppliers.length || !items.length}>{isSaving ? 'Salvando compra…' : 'Salvar compra'}</button></div>
-        </section>
+          <div className="purchase-submit"><button type="button" className="btn btn--secondary" onClick={() => { setFormError(''); setStep(2); }} disabled={isSaving}>Voltar</button><button type="submit" className="btn btn--primary" disabled={isSaving || isLoading || !suppliers.length || !items.length}>{isSaving ? 'Salvando compra…' : 'Salvar compra'}</button></div>
+        </section> : null}
       </form> : null}
     </div>
   </>;
