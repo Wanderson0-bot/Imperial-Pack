@@ -4,12 +4,10 @@ import { Logo } from './Logo';
 import { authService } from '../services/authService';
 
 const menuGroups = [
-  { label: 'Vis\u00e3o geral', items: [{ label: 'Vis\u00e3o geral', to: '/', icon: 'overview' }] },
-  { label: 'Opera\u00e7\u00e3o', items: [{ label: 'Nova compra', to: '/compras/nova', icon: 'purchase' }, { label: 'Pedidos', to: '/pedidos', icon: 'orders' }, { label: 'Estoque', to: '/estoque', icon: 'inventory' }, { label: 'Oportunidades', to: '/oportunidades', icon: 'insights' }] },
-  { label: 'Cat\u00e1logo', items: [{ label: 'Produtos', to: '/produtos', icon: 'products' }, { label: 'Precifica\u00e7\u00e3o', to: '/precificacao', icon: 'pricing' }] },
-  { label: 'Comercial', items: [{ label: 'Clientes', to: '/clientes', icon: 'customers' }, { label: 'Fornecedores', to: '/fornecedores', icon: 'suppliers' }, { label: 'Imperial Partner', to: '/imperial-partner', icon: 'partner' }] },
-  { label: 'Intelig\u00eancia', items: [{ label: 'Intelig\u00eancia', to: '/inteligencia', icon: 'insights' }, { label: 'Relat\u00f3rios', to: '/relatorios', icon: 'reports' }] },
-  { label: 'Administra\u00e7\u00e3o', items: [{ label: 'Planejar', to: '/planejar', icon: 'planning' }, { label: 'Usu\u00e1rios', to: '/usuarios', icon: 'users' }, { label: 'Configura\u00e7\u00f5es', to: '/configuracoes', icon: 'settings' }] },
+  { label: 'Início', items: [{ label: 'Visão geral', to: '/', icon: 'overview' }] },
+  { label: 'Dia a dia', items: [{ label: 'Pedidos', to: '/pedidos', icon: 'orders' }, { label: 'Compras', to: '/compras/nova', icon: 'purchase' }, { label: 'Estoque', to: '/estoque', icon: 'inventory' }] },
+  { label: 'Cadastros', items: [{ label: 'Clientes', to: '/clientes', icon: 'customers' }, { label: 'Produtos', to: '/produtos', icon: 'products' }, { label: 'Fornecedores', to: '/fornecedores', icon: 'suppliers' }] },
+  { label: 'Mais opções', items: [{ label: 'Precificação', to: '/precificacao', icon: 'pricing' }, { label: 'Oportunidades', to: '/oportunidades', icon: 'insights' }, { label: 'Inteligência', to: '/inteligencia', icon: 'insights' }, { label: 'Relatórios', to: '/relatorios', icon: 'reports' }, { label: 'Imperial Partner', to: '/imperial-partner', icon: 'partner' }, { label: 'Planejar', to: '/planejar', icon: 'planning' }, { label: 'Usuários', to: '/usuarios', icon: 'users' }, { label: 'Configurações', to: '/configuracoes', icon: 'settings' }] },
 ];
 const iconPaths: Record<string, string> = {
   overview: 'M3 3h7v7H3z M14 3h7v5h-7z M14 12h7v9h-7z M3 14h7v7H3z', purchase: 'M12 5v14 M5 12h14',

@@ -8,54 +8,67 @@ import { PageHeader } from '../components/PageHeader';
 import { StatusBadge } from '../components/StatusBadge';
 import { orderService } from '../services/orderService';
 import { formatOrderReference } from '../utils/orderReference';
-import type { Order } from '../types';
+import type { Order, OrderStatus } from '../types';
 
 const money = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+const nextStep: Partial<Record<OrderStatus, { status: OrderStatus; label: string; question: string }>> = {
+  Novo: { status: 'Confirmado', label: 'Aceitar pedido', question: 'Aceitar este pedido? O estoque será reservado.' },
+  Confirmado: { status: 'Em separação', label: 'Iniciar separação', question: 'Iniciar a separação dos produtos deste pedido?' },
+  'Em separação': { status: 'Pronto', label: 'Marcar como pronto', question: 'Marcar este pedido como pronto para entrega ou retirada?' },
+  Pronto: { status: 'Entregue', label: 'Finalizar pedido', question: 'Finalizar este pedido e marcá-lo como entregue?' },
+};
 
 export function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [error, setError] = useState('');
   const [feedback, setFeedback] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [cancellingId, setCancellingId] = useState('');
-  const [finishingId, setFinishingId] = useState('');
+  const [updatingId, setUpdatingId] = useState('');
   const refresh = async () => setOrders(await orderService.getAll());
-  useEffect(() => { void refresh().catch(() => setError('Não foi possível carregar os pedidos da API.')).finally(() => setIsLoading(false)); }, []);
+  useEffect(() => { void refresh().catch(() => setError('Não foi possível carregar os pedidos.')).finally(() => setIsLoading(false)); }, []);
+
+  const advanceOrder = async (order: Order) => {
+    const step = nextStep[order.status];
+    if (!step || !window.confirm(`${step.question}\nPedido ${formatOrderReference(order.id)}.`)) return;
+    setUpdatingId(order.id);
+    setError('');
+    setFeedback('');
+    try {
+      await orderService.updateStatus(order.id, step.status);
+      setFeedback(`Pedido ${formatOrderReference(order.id)} atualizado: ${step.status.toLowerCase()}.`);
+      await refresh();
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'Não foi possível atualizar o pedido.');
+    } finally { setUpdatingId(''); }
+  };
 
   const cancelOrder = async (order: Order) => {
-    if (!window.confirm(`Cancelar o pedido ${formatOrderReference(order.id)}? Se o estoque já foi comprometido, ele será devolvido.`)) return;
-    setCancellingId(order.id);
+    if (!window.confirm(`Cancelar o pedido ${formatOrderReference(order.id)}? O estoque reservado será devolvido.`)) return;
+    setUpdatingId(order.id);
     setError('');
+    setFeedback('');
     try {
       await orderService.updateStatus(order.id, 'Cancelado');
       setFeedback(`Pedido ${formatOrderReference(order.id)} cancelado.`);
       await refresh();
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Não foi possível cancelar o pedido.');
-    } finally { setCancellingId(''); }
+    } finally { setUpdatingId(''); }
   };
 
-  const finalizeOrder = async (order: Order) => {
-    if (order.status !== 'Pronto') return;
-    if (!window.confirm(`Finalizar o pedido ${formatOrderReference(order.id)} e marcá-lo como entregue?`)) return;
-    setFinishingId(order.id);
-    setError('');
-    setFeedback('');
-    try {
-      await orderService.updateStatus(order.id, 'Entregue');
-      setFeedback(`Pedido ${formatOrderReference(order.id)} finalizado e marcado como entregue.`);
-      await refresh();
-    } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'Não foi possível finalizar o pedido.');
-    } finally { setFinishingId(''); }
-  };
+  const pending = orders.filter((order) => nextStep[order.status]);
 
   return <><Header title="Pedidos" breadcrumb="Comercial / Vendas" /><div className="page-shell">
-    <PageHeader title="Pedidos e vendas" description="Histórico comercial vinculado a clientes e produtos existentes." actions={<span className="page-header__meta">{orders.length} pedidos</span>} />
+    <PageHeader title="Pedidos" description="Acompanhe cada pedido e avance uma etapa por vez." actions={<span className="page-header__meta">{pending.length} em andamento</span>} />
     {feedback ? <div className="inline-feedback" role="status">{feedback}</div> : null}
     {error ? <ErrorState message={error} /> : null}
-    <section className="panel"><div className="panel__header"><div><h3>Pedidos registrados</h3><p className="panel__description">Pedidos novos não movimentam estoque até a confirmação.</p></div></div>
-      {isLoading ? <LoadingState message="Carregando pedidos…" /> : orders.length ? <DataTable label="Pedidos comerciais" columns={<><th>Pedido</th><th>Cliente</th><th>Data</th><th>Itens</th><th>Valor</th><th>Origem</th><th>Status</th><th>Ações</th></>} rows={orders.map((order) => <tr key={order.id}><td><strong>{formatOrderReference(order.id)}</strong></td><td>{order.customer}</td><td>{new Date(`${order.date}T12:00:00`).toLocaleDateString('pt-BR')}</td><td>{order.items}</td><td>{money.format(order.value)}</td><td>{order.source ?? '—'}</td><td><StatusBadge tone="neutral">{order.status}</StatusBadge></td><td>{order.status !== 'Cancelado' && order.status !== 'Entregue' ? <div className="purchase-row-actions"><button className="btn btn--secondary" type="button" title={order.status === 'Pronto' ? 'Marcar pedido como entregue' : 'O pedido precisa estar Pronto para ser finalizado'} disabled={order.status !== 'Pronto' || finishingId === order.id || Boolean(cancellingId)} onClick={() => void finalizeOrder(order)}>{finishingId === order.id ? 'Finalizando…' : 'Finalizar'}</button><button className="btn btn--secondary" type="button" disabled={cancellingId === order.id || Boolean(finishingId)} onClick={() => void cancelOrder(order)}>{cancellingId === order.id ? 'Cancelando…' : 'Cancelar'}</button></div> : '—'}</td></tr>)} /> : <EmptyState title="Nenhum pedido registrado" description="Registre uma venda pela carteira de clientes para iniciar o histórico comercial." />}
+    <section className="panel">
+      <div className="panel__header"><div><h3>Como funciona</h3><p className="panel__description">Aceite o pedido, separe os produtos, marque como pronto e finalize quando entregar.</p></div></div>
+      <div className="panel__header"><div><h3>Lista de pedidos</h3><p className="panel__description">O estoque é reservado ao aceitar. Cancelar devolve o estoque reservado.</p></div><span className="page-header__meta">{orders.length} pedidos</span></div>
+      {isLoading ? <LoadingState message="Carregando pedidos…" /> : orders.length ? <DataTable label="Pedidos" columns={<><th>Pedido</th><th>Cliente</th><th>Data</th><th>Itens</th><th>Valor</th><th>Status</th><th>Próxima ação</th></>} rows={orders.map((order) => {
+        const step = nextStep[order.status];
+        return <tr key={order.id}><td><strong>{formatOrderReference(order.id)}</strong></td><td>{order.customer}</td><td>{new Date(`${order.date}T12:00:00`).toLocaleDateString('pt-BR')}</td><td>{order.items}</td><td>{money.format(order.value)}</td><td><StatusBadge tone="neutral">{order.status}</StatusBadge></td><td>{step ? <div className="purchase-row-actions"><button className="btn btn--primary" type="button" disabled={Boolean(updatingId)} onClick={() => void advanceOrder(order)}>{updatingId === order.id ? 'Atualizando…' : step.label}</button><button className="btn btn--secondary" type="button" disabled={Boolean(updatingId)} onClick={() => void cancelOrder(order)}>Cancelar</button></div> : order.status === 'Entregue' ? 'Concluído' : order.status === 'Cancelado' ? 'Cancelado' : '—'}</td></tr>;
+      })} /> : <EmptyState title="Nenhum pedido ainda" description="Registre uma venda na página de Clientes. Os novos pedidos aparecerão aqui para você aceitar e acompanhar." />}
     </section>
   </div></>;
 }

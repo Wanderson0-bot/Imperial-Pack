@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import { Header } from '../components/Header';
 import { Sidebar } from '../components/Sidebar';
+import { SystemTutorial } from '../components/SystemTutorial';
 
 const pageContext: Record<string, { label: string; breadcrumb: string }> = {
   '/': { label: 'Vis\u00e3o geral', breadcrumb: 'Vis\u00e3o geral / Centro de comando' },
@@ -25,5 +26,5 @@ export function AppShell() {
   const segment = pageContext[location.pathname] ?? (isProductDetail
     ? { label: 'Detalhe do produto', breadcrumb: 'Cat\u00e1logo / Produtos / Detalhe' }
     : { label: 'Vis\u00e3o geral', breadcrumb: 'Vis\u00e3o geral / Centro de comando' });
-  return <div className="app-shell"><a className="skip-link" href="#main-content">Ir para o conteúdo principal</a><Sidebar /><div className="app-shell__content"><Header variant="shell" module={segment.label} breadcrumb={segment.breadcrumb} /><div className="workspace-canvas"><main className="app-main" id="main-content" tabIndex={-1}><Outlet /></main></div></div></div>;
+  return <div className="app-shell"><a className="skip-link" href="#main-content">Ir para o conteúdo principal</a><Sidebar /><div className="app-shell__content"><Header variant="shell" module={segment.label} breadcrumb={segment.breadcrumb} actions={<SystemTutorial />} /><div className="workspace-canvas"><main className="app-main" id="main-content" tabIndex={-1}><Outlet /></main></div></div></div>;
 }

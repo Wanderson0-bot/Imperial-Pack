@@ -121,7 +121,7 @@ export function CustomersPage() {
     try {
       const order = await orderService.createSale({ customerId: saleCustomer.id, customerName: saleCustomer.name, date: saleDate, notes: saleNotes.trim(), items: saleLines.map((line) => ({ productId: line.productId, quantity: Number(line.quantity) })) });
       setSaleCustomer(null);
-      setFeedback(`Venda ${formatOrderReference(order.id)} registrada como pedido novo; indicadores do cliente serão recalculados pela API.`);
+      setFeedback(`Pedido ${formatOrderReference(order.id)} criado. Agora aceite-o na página Pedidos para reservar o estoque.`);
       await loadData();
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Não foi possível registrar a venda.');
@@ -131,13 +131,13 @@ export function CustomersPage() {
   return <>
     <Header title="Clientes" breadcrumb="Comercial / Clientes" />
     <div className="page-shell">
-      <PageHeader title="Clientes" description="Cadastre clientes uma única vez e acompanhe pedidos e histórico comercial." actions={<button className="btn btn--primary" type="button" onClick={() => openCustomer()}>+ Adicionar cliente</button>} />
+      <PageHeader title="Clientes" description="Cadastre clientes e crie pedidos para eles." actions={<button className="btn btn--primary" type="button" onClick={() => openCustomer()}>+ Adicionar cliente</button>} />
       {feedback ? <div className="inline-feedback" role="status">{feedback}</div> : null}
       {error && !showCustomerForm && !saleCustomer ? <ErrorState message={error} /> : null}
       <section className="panel">
         <div className="toolbar"><input aria-label="Buscar clientes" placeholder="Buscar por nome, empresa, e-mail ou telefone" value={search} onChange={(event) => setSearch(event.target.value)} /></div>
         <div className="panel__header"><div><h3>Carteira de clientes</h3><p className="panel__description">Pedidos, total comprado, ticket médio e última compra calculados pelo histórico não cancelado.</p></div><span className="page-header__meta">{customers.length} clientes</span></div>
-        {isLoading ? <LoadingState message="Carregando clientes…" /> : error && !customers.length ? <ErrorState message={error} /> : customers.length ? <DataTable label="Carteira de clientes" columns={<><th>Nome</th><th>Empresa</th><th>Pedidos</th><th>Total comprado</th><th>Ticket médio</th><th>Última compra</th><th>Ações</th></>} rows={customers.map((customer) => <tr key={customer.id}><td><strong>{customer.name}</strong><small>{customer.email || customer.phone}</small></td><td>{customer.company || '—'}</td><td>{customer.orders ?? 0}</td><td>{money.format(customer.totalSpent ?? 0)}</td><td>{money.format(customer.averageTicket ?? 0)}</td><td>{customer.lastPurchase ? new Date(`${customer.lastPurchase}T12:00:00`).toLocaleDateString('pt-BR') : 'Nenhuma compra'}</td><td><div className="commercial-row-actions"><button className="btn btn--secondary" type="button" onClick={() => openCustomer(customer)}>Editar</button><button className="btn btn--primary" type="button" onClick={() => openSale(customer)}>Registrar venda</button></div></td></tr>)} /> : <EmptyState title="Nenhum cliente cadastrado" description="Adicione o primeiro cliente para começar a registrar o histórico comercial." />}
+        {isLoading ? <LoadingState message="Carregando clientes…" /> : error && !customers.length ? <ErrorState message={error} /> : customers.length ? <DataTable label="Clientes" columns={<><th>Nome</th><th>Empresa</th><th>Pedidos</th><th>Total comprado</th><th>Ticket médio</th><th>Última compra</th><th>Ações</th></>} rows={customers.map((customer) => <tr key={customer.id}><td><strong>{customer.name}</strong><small>{customer.email || customer.phone}</small></td><td>{customer.company || '—'}</td><td>{customer.orders ?? 0}</td><td>{money.format(customer.totalSpent ?? 0)}</td><td>{money.format(customer.averageTicket ?? 0)}</td><td>{customer.lastPurchase ? new Date(`${customer.lastPurchase}T12:00:00`).toLocaleDateString('pt-BR') : 'Nenhuma compra'}</td><td><div className="commercial-row-actions"><button className="btn btn--secondary" type="button" onClick={() => openCustomer(customer)}>Editar</button><button className="btn btn--primary" type="button" onClick={() => openSale(customer)}>Novo pedido</button></div></td></tr>)} /> : <EmptyState title="Nenhum cliente cadastrado" description="Adicione o primeiro cliente para começar a criar pedidos." />}
       </section>
     </div>
 
@@ -161,7 +161,7 @@ export function CustomersPage() {
     </form></div> : null}
 
     {saleCustomer ? <div className="admin-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setSaleCustomer(null); }}><form className="admin-modal commercial-modal" role="dialog" aria-modal="true" aria-labelledby="sale-form-title" onSubmit={(event) => void saveSale(event)}>
-      <header className="admin-modal__header"><div><span className="eyebrow">CLIENTE · {saleCustomer.name}</span><h2 id="sale-form-title">Registrar venda</h2></div><button type="button" aria-label="Fechar" onClick={() => setSaleCustomer(null)}>×</button></header>
+      <header className="admin-modal__header"><div><span className="eyebrow">CLIENTE · {saleCustomer.name}</span><h2 id="sale-form-title">Criar pedido</h2></div><button type="button" aria-label="Fechar" onClick={() => setSaleCustomer(null)}>×</button></header>
       <label>Cliente<input value={saleCustomer.company ? `${saleCustomer.name} · ${saleCustomer.company}` : saleCustomer.name} readOnly /></label>
       <label>Data da venda<input type="date" required value={saleDate} onChange={(event) => setSaleDate(event.target.value)} /></label>
       <div className="commercial-sale-lines"><div className="commercial-sale-lines__heading"><strong>Produtos</strong><button type="button" className="btn btn--secondary" onClick={() => setSaleLines((current) => [...current, { productId: products[0]?.id ?? '', quantity: '1' }])}>+ Adicionar produto</button></div>
@@ -173,9 +173,9 @@ export function CustomersPage() {
       </div>
       <label>Observações<textarea rows={2} value={saleNotes} onChange={(event) => setSaleNotes(event.target.value)} /></label>
       <div className="commercial-sale-total"><span>Total calculado</span><strong>{money.format(saleTotalCents / 100)}</strong></div>
-      <p className="admin-modal__hint">A venda será registrada como pedido novo. O estoque só é consumido quando o pedido for confirmado.</p>
+      <p className="admin-modal__hint">Depois de criar, abra Pedidos e aceite o pedido. O estoque será reservado ao aceitar.</p>
       {error ? <ErrorState message={error} /> : null}
-      <footer className="admin-modal__actions"><button type="button" className="btn btn--secondary" onClick={() => setSaleCustomer(null)}>Cancelar</button><button type="submit" className="btn btn--primary" disabled={isSaving || !products.length}>{isSaving ? 'Salvando…' : 'Salvar venda'}</button></footer>
+      <footer className="admin-modal__actions"><button type="button" className="btn btn--secondary" onClick={() => setSaleCustomer(null)}>Cancelar</button><button type="submit" className="btn btn--primary" disabled={isSaving || !products.length}>{isSaving ? 'Salvando…' : 'Criar pedido'}</button></footer>
     </form></div> : null}
   </>;
 }
